@@ -12,6 +12,8 @@ using KutlanKocamanDemo.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using KutlanKocamanDemo.Services;
 
 namespace KutlanKocamanDemo
 {
@@ -32,6 +34,11 @@ namespace KutlanKocamanDemo
                     Configuration["ConnectionStrings:DefaultConnection"]));
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            //Email sending.
+            services.AddTransient<IEmailSender, EmailSender>();
+            services.Configure<AuthMessageSenderOptions>(Configuration);
+
             services.AddControllersWithViews();
             services.AddRazorPages();
         }
