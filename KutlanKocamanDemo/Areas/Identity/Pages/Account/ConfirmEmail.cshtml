@@ -1,0 +1,15 @@
+﻿@page
+@model ConfirmEmailModel
+@{
+    ViewData["Title"] = "Confirm email";
+}
+
+<h1>@ViewData["Title"]</h1>
+@if (Model.EmailConfirmationSucceeded)
+{
+<p>Thank you for confirming your email. You can now <a id="login" asp-page="./Login">login</a>.</p>
+}
+else
+{
+<p>There was an error confirming your email.</p>
+}
