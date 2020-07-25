@@ -34,6 +34,11 @@ namespace KutlanKocamanDemo
                     Configuration["ConnectionStrings:DefaultConnection"]));
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+            services.Configure<IdentityOptions>(options =>
+            {
+                //Account lockout is permanent (must be unlocked via "forgot password" request").
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromDays(DateTime.MaxValue.Subtract(DateTime.Now).Days);
+            });
 
             //Email sending.
             services.AddTransient<IEmailSender, EmailSender>();
