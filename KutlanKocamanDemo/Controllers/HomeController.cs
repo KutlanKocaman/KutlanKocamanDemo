@@ -10,6 +10,7 @@ using KutlanKocamanDemo.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Data.SqlClient;
+using Microsoft.AspNetCore.Authorization;
 
 namespace KutlanKocamanDemo.Controllers
 {
@@ -24,6 +25,7 @@ namespace KutlanKocamanDemo.Controllers
             _dbContext = dbContext;
         }
 
+        [AllowAnonymous]
         public IActionResult Index()
         {
             return View();
