@@ -1,0 +1,48 @@
+﻿@model IEnumerable<KutlanKocamanDemo.Models.Customer>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Customers</h1>
+<hr />
+<p>
+    <a class="btn btn-default" asp-action="Create">Create a new customer</a>
+</p>
+<hr />
+<div class="container alternate-anchor-colour">
+    <div class="row">
+        <div class="col-2 grid-header">
+            @Html.DisplayNameFor(model => model.CustomerId)
+        </div>
+        <div class="col-3 grid-header">
+            Name
+        </div>
+        <div class="col-7 grid-header">
+            Address
+        </div>
+    </div>
+    @foreach (var item in Model)
+    {
+<a class="clickable-row" asp-action="Details" asp-route-id="@item.CustomerId">
+    <div class="row">
+        <div class="col-2">
+            @Html.DisplayFor(modelItem => item.CustomerId)
+        </div>
+        <div class="col-3">
+            @Html.DisplayFor(modelItem => item.FirstName) @Html.DisplayFor(modelItem => item.LastName)
+        </div>
+        <div class="col-7">
+
+            @Html.DisplayFor(modelItem => item.AddressLine1)
+            @if (!String.IsNullOrWhiteSpace(item.AddressLine2)) { Html.DisplayFor(modelItem => item.AddressLine2); }
+            @if (!String.IsNullOrWhiteSpace(item.Locality)) { Html.DisplayFor(modelItem => item.Locality); }
+            , @Html.DisplayFor(modelItem => item.County)
+            , @Html.DisplayFor(modelItem => item.PostCode)
+
+        </div>
+    </div>
+</a>
+    }
+    </div>
