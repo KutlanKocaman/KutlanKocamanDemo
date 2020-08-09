@@ -8,10 +8,26 @@
 <h1>Create A New Customer</h1>
 <hr />
 <p>
-    <a class="btn btn-default" asp-action="Index" onclick="return confirm('Are you sure?');">Back to Customer List</a>
-    <button type="submit" value="Create" form="newCustomerForm" class="btn btn-default">Create Customer</button>
+    @if (!(bool)ViewData["CustomerLimitReached"])
+    {
+        <a class="btn btn-default" asp-action="Index" onclick="return confirm('Are you sure?');">Back to Customer List</a>
+        <button type="submit" value="Create" form="newCustomerForm" class="btn btn-default">Create Customer</button>
+    }
+    else
+    {
+        <a class="btn btn-default" asp-action="Index">Back to Customer List</a>
+    }
 </p>
 <hr />
+@if ((bool)ViewData["CustomerLimitReached"])
+{
+    <h5 class="text-danger">
+        You have reached the limit of @ViewData["CustomerLimit"] customers.<br />
+        Please delete one of your existing customers in order to be able to create a new customer.
+    </h5>
+}
+else
+{
 <div class="container">
     <form id="newCustomerForm" asp-action="Create" class="alternate-div-colour">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -98,6 +114,7 @@
         </div>
     </form>
 </div>
+}
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

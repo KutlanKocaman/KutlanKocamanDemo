@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 using System.ComponentModel;
+using Microsoft.AspNetCore.Identity;
 
 namespace KutlanKocamanDemo.Models
 {
@@ -56,5 +57,7 @@ namespace KutlanKocamanDemo.Models
         [RegularExpression(@"([Gg][Ii][Rr] 0[Aa]{2})|((([A-Za-z][0-9]{1,2})|(([A-Za-z][A-Ha-hJ-Yj-y][0-9]{1,2})|(([A-Za-z][0-9][A-Za-z])|([A-Za-z][A-Ha-hJ-Yj-y][0-9][A-Za-z]?))))\s?[0-9][A-Za-z]{2})", ErrorMessage = "Invalid format for a postcode.")]
         [Required]
         public string PostCode { get; set; }
+
+        public IdentityUser Owner { get; set; }
     }
 }

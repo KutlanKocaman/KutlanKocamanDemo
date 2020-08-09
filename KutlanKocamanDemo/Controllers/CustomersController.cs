@@ -4,24 +4,34 @@ using System.Linq;
 using System.Threading.Tasks;
 using KutlanKocamanDemo.Data;
 using KutlanKocamanDemo.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
+using SendGrid.Helpers.Errors.Model;
 
 namespace KutlanKocamanDemo.Controllers
 {
     public class CustomersController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private UserManager<IdentityUser> _userManager;
+        private int _customerCountLimit = 5;
 
-        public CustomersController(ApplicationDbContext context)
+        public CustomersController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Customers
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Customers.ToListAsync());
+            var result = _context.Customers
+                .Where(c => c.Owner.Id.Equals(_userManager.GetUserId(User))) //Return only customers owned by this user.
+                .OrderBy(c => c.LastName);
+
+            return View(await result.ToListAsync());
         }
 
         // GET: Customers/Details/5
@@ -32,8 +42,8 @@ namespace KutlanKocamanDemo.Controllers
                 return NotFound();
             }
 
-            var customer = await _context.Customers
-                .FirstOrDefaultAsync(m => m.CustomerId == id);
+            //Can only view customers owned by the current user.
+            var customer = await GetCustomerById((int)id);
             if (customer == null)
             {
                 return NotFound();
@@ -45,6 +55,9 @@ namespace KutlanKocamanDemo.Controllers
         // GET: Customers/Create
         public IActionResult Create()
         {
+            ViewData["CustomerLimitReached"] = GetCustomerCount().Result >= _customerCountLimit;
+            ViewData["CustomerLimit"] = _customerCountLimit;
+
             return View();
         }
 
@@ -55,8 +68,16 @@ namespace KutlanKocamanDemo.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("CustomerId,FirstName,LastName,DateOfBirth,AddressLine1,AddressLine2,AddressLine3,Locality,County,PostCode")] Customer customer)
         {
+            //Check that the user has not reached their customer limit.
+            int customerCount = await GetCustomerCount();
+            if (customerCount >= _customerCountLimit)
+            {
+                return StatusCode(403, "Customer limit reached");
+            }
+
             if (ModelState.IsValid)
             {
+                customer.Owner = await _userManager.GetUserAsync(User); //The owner of customer will be the current user.
                 _context.Add(customer);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -71,12 +92,14 @@ namespace KutlanKocamanDemo.Controllers
             {
                 return NotFound();
             }
-
-            var customer = await _context.Customers.FindAsync(id);
+            
+            //The customer must be owned by the current user.
+            var customer = await GetCustomerById((int)id);
             if (customer == null)
             {
                 return NotFound();
             }
+
             return View(customer);
         }
 
@@ -92,6 +115,12 @@ namespace KutlanKocamanDemo.Controllers
                 return NotFound();
             }
 
+            //The customer must exist and this user must be the owner.
+            if (!CustomerExistsForUser(customer.CustomerId))
+            {
+                return NotFound();
+            }
+
             if (ModelState.IsValid)
             {
                 try
@@ -101,7 +130,7 @@ namespace KutlanKocamanDemo.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CustomerExists(customer.CustomerId))
+                    if (!CustomerExistsForUser(customer.CustomerId))
                     {
                         return NotFound();
                     }
@@ -120,15 +149,36 @@ namespace KutlanKocamanDemo.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var customer = await _context.Customers.FindAsync(id);
+            //The customer must exist and this user must be the owner.
+            var customer = await GetCustomerById(id);
+            if (customer == null)
+            {
+                return NotFound();
+            }
+
             _context.Customers.Remove(customer);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool CustomerExists(int id)
+        private bool CustomerExistsForUser(int id)
         {
-            return _context.Customers.Any(e => e.CustomerId == id);
+            return _context.Customers.Any(e => e.CustomerId == id && e.Owner.Id == _userManager.GetUserId(User));
+        }
+
+        private async Task<Customer> GetCustomerById(int id)
+        {
+            return await _context.Customers
+                .Where(c => c.Owner.Id.Equals(_userManager.GetUserId(User))) //The current user must be the owner of the customer.
+                .FirstOrDefaultAsync(m => m.CustomerId == id);
+        }
+
+        private async Task<int> GetCustomerCount()
+        {
+            return await _context.Customers
+                .Where(c => c.Owner.Id.Equals(_userManager.GetUserId(User))) //Owned by this user.
+                .AsNoTracking()
+                .CountAsync();
         }
     }
 }
