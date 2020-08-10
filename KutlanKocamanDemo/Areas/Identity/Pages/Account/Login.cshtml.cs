@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using System.Text;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace KutlanKocamanDemo.Areas.Identity.Pages.Account
 {
@@ -120,8 +122,15 @@ namespace KutlanKocamanDemo.Areas.Identity.Pages.Account
                 ModelState.AddModelError(string.Empty, "Verification email sent. Please check your email.");
             }
 
+            //If the user's email is already confirmed then don't send another verification email.
+            if (user.EmailConfirmed)
+            {
+                return StatusCode(403, "Account already verified");
+            }
+
             var userId = await _userManager.GetUserIdAsync(user);
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code)); //This is missing from Microsoft scaffolded code, but needs to be here.
             var callbackUrl = Url.Page(
                 "/Account/ConfirmEmail",
                 pageHandler: null,
