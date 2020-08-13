@@ -16,11 +16,3 @@ END
 
 --Add KKDemoUser to KKDemoRole.
 ALTER ROLE [KKDemoRole] ADD MEMBER [KKDemoUser]
-
---Grant permissions to KKDemoRole.
-GRANT SELECT ON dbo.AspNetUsers TO [KKDemoRole]
-GRANT INSERT ON dbo.AspNetUsers TO [KKDemoRole]
-GRANT UPDATE ON dbo.AspNetUsers TO [KKDemoRole]
-GRANT SELECT ON dbo.AspNetUserClaims TO [KKDemoRole]
-GRANT SELECT ON dbo.AspNetUserLogins TO [KKDemoRole]
-GRANT INSERT ON dbo.AspNetUserLogins TO [KKDemoRole]

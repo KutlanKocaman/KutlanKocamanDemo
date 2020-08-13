@@ -8,6 +8,11 @@
   <PropertyGroup>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <Compile Remove="Data\Migrations\20200813194615_AddDatabasePermissions.cs" />
+    <Compile Remove="Data\Migrations\20200813194615_AddDatabasePermissions.Designer.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <FrameworkRerence Include="Microsoft.AspNetCore.App" Version="2.2.8" />
