@@ -1,0 +1,58 @@
+﻿body {
+    --show-me-colour: #fcfb00;
+}
+
+.hidden {
+    visibility: hidden;
+}
+
+.search-word {
+    margin-bottom: 0.2em;
+    margin-right: 0.2em;
+}
+
+input.search-word {
+    text-transform: uppercase;
+    width: 13em;
+}
+
+.remove-word-button {
+    width: 2em;
+    height: 1.9em;
+    margin-right: 0.2em;
+    margin-bottom: 0.3em;
+    line-height: 0px; /* Center align minus text */
+}
+
+.show-me-button {
+    background-color: var(--show-me-colour);
+}
+
+.add-word-button {
+    display: block;
+    margin-bottom: 0.2em;
+}
+
+.grid-control-button {
+    margin-bottom: 0.2em;
+    margin-right: 0.2em;
+}
+
+.grid-cell {
+    border: solid black 2px;
+    height: 2em;
+    width: 2em;
+    text-align: center;
+}
+
+.grid-cell-visiting {
+    background-color: #f5a500;
+}
+
+.grid-cell-found {
+    background-color: #7cfc00;
+}
+
+.grid-cell-show {
+    background-color: var(--show-me-colour);
+}

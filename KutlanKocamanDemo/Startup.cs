@@ -16,6 +16,10 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using KutlanKocamanDemo.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.AspNetCore.Http;
+using JavaScriptEngineSwitcher.V8;
+using JavaScriptEngineSwitcher.Extensions.MsDependencyInjection;
+using React.AspNet;
 
 namespace KutlanKocamanDemo
 {
@@ -45,6 +49,12 @@ namespace KutlanKocamanDemo
             //Email sending.
             services.AddTransient<IEmailSender, EmailSender>();
             services.Configure<AuthMessageSenderOptions>(Configuration);
+
+            //For React.
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddReact();
+            services.AddJsEngineSwitcher(options => options.DefaultEngineName = V8JsEngine.EngineName)
+                .AddV8();
 
             services.AddControllersWithViews();
             services.AddRazorPages();
@@ -78,6 +88,7 @@ namespace KutlanKocamanDemo
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
+            app.UseReact(config => {});
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
