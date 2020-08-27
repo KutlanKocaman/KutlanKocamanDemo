@@ -33,6 +33,11 @@ input.search-word {
     margin-bottom: 0.2em;
 }
 
+.row-count-input {
+    margin-left: 0.3em;
+    width: 2em;
+}
+
 .grid-control-button {
     margin-bottom: 0.2em;
     margin-right: 0.2em;

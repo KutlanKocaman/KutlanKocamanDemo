@@ -5,11 +5,11 @@
         const rows = 10;
         const cols = 10;
 
-        //Initialize the cell values and states.
+        //Create a new empty grid.
         let grid = createMultiDimensionalArray(rows, cols);
         for (let i = 0; i < grid.length; i++) {
             for (let j = 0; j < grid[i].length; j++) {
-                grid[i][j] = { letter: null, state: 0 };
+                grid[i][j] = { letter: null, state: '' };
             }
         }
 
@@ -39,6 +39,7 @@
             wordsAndGridInSync: false,
             rowCount: rows,
             columnCount: cols,
+            maxRows: 40,
             grid: grid,
             animationQueue: [],
             animationIndex: 0,
@@ -154,7 +155,7 @@
                 }
             }
         }
-
+        
         //Iterate through each word and place them on the grid in randomly.
         for (let w = 0; w < words.length; w++) {
             let row, col;
@@ -172,6 +173,9 @@
                     col = randomBetweenInclusive(0, grid[0].length - 1);
                 }
 
+                //Save the cell's letter in case we need to reverse the change.
+                let originalCellValue = grid[row][col].letter;
+
                 //Place this letter on the grid.
                 usedCells.add(this.getCellIndex(row, col));
                 grid[row][col].letter = words[w].word.charAt(0);
@@ -184,10 +188,7 @@
                     break;
                 }
                 //Else reset this cell on the grid and backtrack to try again.
-                grid[row][col].letter = null;
-            }
-            if (wordPlaced === false) {
-                throw new Error('"' + words[w].word + '" could not be placed');
+                grid[row][col].letter = originalCellValue;
             }
         }
 
@@ -595,6 +596,43 @@
         return cells;
     }
 
+    updateRowColumnCount = (event) => {
+        //Set the new row and column count.
+        let newRowCount = parseInt(event.target.value);
+        let newColCount = parseInt(event.target.value);
+
+        //If the value in the cell cannot be parsed as an integer then set a valid integer.
+        if (Number.isNaN(newRowCount)) {
+            newRowCount = 0;
+            newColCount = 0;
+        }
+
+        //Prevent the grid from being too big.
+        if (newRowCount > this.state.maxRows) {
+            newRowCount = this.state.maxRows;
+            newColCount = this.state.maxRows;
+        }
+        //Prevent the grid from being too small.
+        else if (newRowCount < 0) {
+            newRowCount = 0;
+            newColCount = 0;
+        }
+
+        //Create the new empty grid based on the new row and column counts.
+        let grid = createMultiDimensionalArray(newRowCount, newColCount);
+        for (let i = 0; i < grid.length; i++) {
+            for (let j = 0; j < grid[i].length; j++) {
+                grid[i][j] = { letter: null, state: 0 };
+            }
+        }
+
+        this.setState({
+            rowCount: newRowCount,
+            colCount: newColCount,
+            grid: grid
+        });
+    }
+
     getCellClass = (cell) => {
         if (cell.state === 'VISITING') {
             return "grid-cell grid-cell-visiting";
@@ -699,6 +737,27 @@
                     disabled={this.isAnimationRunning()}
                     onClick={() => this.addWord()}
                 >Add a Word</button>
+                <label>How Many Rows and Columns?</label>
+                <input
+                    className="row-count-input"
+                    maxLength="2"
+                    value={this.state.rowCount}
+                    onKeyDown={(event) => {
+                        //Allow only numbers to be entered into the row/col count input (or backspace or delete).
+                        let key = event.key;
+                        let regex = new RegExp(/[0-9]/);
+                        let acceptableNonDigits = new Set();
+                        acceptableNonDigits.add('Backspace');
+                        acceptableNonDigits.add('Delete');
+                        acceptableNonDigits.add('ArrowLeft');
+                        acceptableNonDigits.add('ArrowRight');
+                        if (!(regex.test(key) === true || acceptableNonDigits.has(key))) {
+                            event.preventDefault();
+                        }
+                    }}
+                    onChange={(event) => this.updateRowColumnCount(event)}
+                />
+                <br />
                 <button
                     className="grid-control-button"
                     onClick={() => this.doWordSearch()}
