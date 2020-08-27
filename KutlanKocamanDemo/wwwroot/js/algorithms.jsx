@@ -298,7 +298,10 @@
                     let cellIndex = this.getCellIndex(i, j);
                     usedCells.add(cellIndex);
 
-                    //Try to place the rest of the word.
+                    //Queue the animation to show we matched a letter.
+                    this.queueAnimation(i, j, 'PARTFOUND');
+
+                    //Try to find the rest of the word.
                     result = this.wordSearchCellRecurse(grid, words, usedCells, outputHash, trieRoot.Children[grid[i][j].letter], i, j);
 
                     usedCells.delete(cellIndex);
@@ -353,24 +356,29 @@
             [-1, 0]
         ];
 
-        //Iterate throguh neighbouring cells.
+        //Iterate through neighbouring cells.
         for (let i = 0; i < neighbouringCells.length; i++) {
             let newRow = row + neighbouringCells[i][0];
             let newCol = col + neighbouringCells[i][1];
+            let cellIndex = this.getCellIndex(newRow, newCol);
 
-            //If the row and column are valid.
+            //If the row and column indexes are valid on the grid
+            //and the cell has not already been used to match this word.
             if (newRow >= 0 && newRow < grid.length
-                && newCol >= 0 && newCol < grid[0].length) {
-                let cellIndex = this.getCellIndex(newRow, newCol);
+                && newCol >= 0 && newCol < grid[0].length
+                && !usedCells.has(cellIndex)) {
 
-                //If this cell is not already used and one of the TrieNode children is this letter.
-                if (!usedCells.has(cellIndex) && (grid[newRow][newCol].letter in curNode.Children)) {
+                //Queue the animation to show that this cell is being examined.
+                let originalCellState = grid[newRow][newCol].state;
+                this.queueAnimation(newRow, newCol, 'VISITING', 4);
+
+                //If this cell's letter is one of the TrieNode's children.
+                if ((grid[newRow][newCol].letter in curNode.Children)) {
                     //Add the cell to the set of cells that have been used to match this word.
                     usedCells.add(cellIndex);
 
-                    //Queue the animation to show that this cell is being examined.
-                    let originalCellState = grid[newRow][newCol].state;
-                    this.queueAnimation(newRow, newCol, 'VISITING', 6);
+                    //Queue the animation to show that we have matched a letter in this cell.
+                    this.queueAnimation(newRow, newCol, 'PARTFOUND', 6);
 
                     //See if we can find a word using this neighbour
                     let result = this.wordSearchCellRecurse(grid, words, usedCells, outputHash, curNode.Children[grid[newRow][newCol].letter], newRow, newCol);
@@ -397,7 +405,15 @@
                         grid[newRow][newCol].state = originalCellState;
                         this.queueAnimation(newRow, newCol, originalCellState, 6);
                     }
-                    
+
+                }
+                //The cell's letter does not match any of the TrieNode's children.
+                else {
+                    grid[newRow][newCol].state = originalCellState;
+                    //Show the mismsatch...
+                    this.queueAnimation(newRow, newCol, 'MISMATCH', 6);
+                    //Then return the cell to its original state.
+                    this.queueAnimation(newRow, newCol, originalCellState, 6);
                 }
             }
         }
@@ -635,17 +651,19 @@
     }
 
     getCellClass = (cell) => {
-        if (cell.state === 'VISITING') {
-            return "grid-cell grid-cell-visiting";
-        }
-        else if (cell.state === 'FOUND') {
-            return "grid-cell grid-cell-found"
-        }
-        else if (cell.state === 'SHOW') {
-            return "grid-cell grid-cell-show"
-        }
-        else {
-            return "grid-cell";
+        switch (cell.state) {
+            case 'VISITING':
+                return "grid-cell grid-cell-visiting";
+            case 'PARTFOUND':
+                return "grid-cell grid-cell-partfound";
+            case 'FOUND':
+                return "grid-cell grid-cell-found";
+            case 'MISMATCH':
+                return "grid-cell grid-cell-mismatch";
+            case 'SHOW':
+                return "grid-cell grid-cell-show";
+            default:
+                return "grid-cell";
         }
     }
 

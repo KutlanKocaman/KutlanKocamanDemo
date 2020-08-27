@@ -51,7 +51,7 @@ input.search-word {
 }
 
 .grid-cell-visiting {
-    background-color: #f5a500;
+    background-color: deepskyblue;
 }
 
 .grid-cell-found {
@@ -60,4 +60,12 @@ input.search-word {
 
 .grid-cell-show {
     background-color: var(--show-me-colour);
+}
+
+.grid-cell-partfound {
+    background-color: #f5a500;
+}
+
+.grid-cell-mismatch {
+    background-color: red;
 }
