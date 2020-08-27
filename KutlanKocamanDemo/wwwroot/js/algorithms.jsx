@@ -36,6 +36,7 @@
                     cells: new Set(),
                     show: false
                 }],
+            maxWords: 20,
             wordsAndGridInSync: false,
             rowCount: rows,
             columnCount: cols,
@@ -667,6 +668,16 @@
         return "";
     }
 
+    shouldAddWordBeDisabled = () => {
+        if (this.isAnimationRunning()
+            || this.state.words.length >= this.state.maxWords) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
     getAnimationControlButtonClass = () => {
         if (this.state.wordsAndGridInSync !== true) {
             return "grid-control-button hidden";
@@ -734,7 +745,7 @@
                 {wordsList}
                 <button
                     className="add-word-button"
-                    disabled={this.isAnimationRunning()}
+                    disabled={this.shouldAddWordBeDisabled()}
                     onClick={() => this.addWord()}
                 >Add a Word</button>
                 <label>How Many Rows and Columns?</label>
