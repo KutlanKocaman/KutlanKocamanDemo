@@ -419,6 +419,11 @@
                         //We found a word and the trie node for that word has no children, so delete the node.
                         if (Object.keys(curNode.Children[grid[newRow][newCol].letter].Children).length === 0) {
                             delete curNode.Children[grid[newRow][newCol].letter];
+
+                            //If this TrieNode no longer has any children, then don't bother iterating through any remaining neighbours.
+                            if (curNode.Children.size === 0) {
+                                break;
+                            }
                         }
                     }
                     //We didn't find a word further up the stack.
