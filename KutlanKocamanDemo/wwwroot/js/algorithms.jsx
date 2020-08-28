@@ -392,7 +392,6 @@
 
                 //Queue the animation to show that this cell is being examined.
                 let originalCellState = grid[newRow][newCol].state;
-                this.queueGridAnimation(newRow, newCol, 'VISITING', 4);
 
                 //If this cell's letter is one of the TrieNode's children.
                 if ((grid[newRow][newCol].letter in curNode.Children)) {
