@@ -24,10 +24,6 @@ input.search-word {
     line-height: 0px; /* Center align minus text */
 }
 
-.show-me-button {
-    background-color: var(--show-me-colour);
-}
-
 .add-word-button {
     display: block;
     margin-bottom: 0.2em;
@@ -50,22 +46,22 @@ input.search-word {
     text-align: center;
 }
 
-.grid-cell-visiting {
+.word-search-visiting {
     background-color: deepskyblue;
 }
 
-.grid-cell-found {
+.word-search-found {
     background-color: #7cfc00;
 }
 
-.grid-cell-show {
+.word-search-show {
     background-color: var(--show-me-colour);
 }
 
-.grid-cell-partfound {
+.word-search-partfound {
     background-color: #f5a500;
 }
 
-.grid-cell-mismatch {
+.word-search-mismatch {
     background-color: red;
 }

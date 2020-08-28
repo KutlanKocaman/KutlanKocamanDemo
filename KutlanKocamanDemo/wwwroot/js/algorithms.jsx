@@ -19,22 +19,22 @@
                 {
                     word: "KUTLANKOCAMAN",
                     cells: new Set(),
-                    show: false
+                    state: ''
                 },
                 {
                     word: "algo",
                     cells: new Set(),
-                    show: false
+                    state: ''
                 },
                 {
                     word: 'algorithms',
                     cells: new Set(),
-                    show: false
+                    state: ''
                 },
                 {
                     word: 'algorithmic',
                     cells: new Set(),
-                    show: false
+                    state: ''
                 }],
             maxWords: 20,
             wordsAndGridInSync: false,
@@ -59,7 +59,7 @@
         newWords.push({
             word: text || '',
             cells: new Set(),
-            show: false
+            state: ''
         });
 
         this.setState({
@@ -104,17 +104,34 @@
             cellsToShow.add(grid[row][col]);
         }
 
-        //Set the new "show" state for the word:
+        //Set the new state for the word:
         //If the word is not currently shown, then show it. Otherwise un-show it.
-        let newShow = word.show === false ? true : false;
+        let newState;
+        if (word.state !== 'SHOW') {
+            newState = 'SHOW';
+        }
+        else {
+            if (word.cells.size > 0) {
+                newState = 'FOUND';
+            }
+            else {
+                newState = '';
+            }
+        }
+        //Iterate through the words to set the state of each.
         for (let i = 0; i < words.length; i++) {
             //Set the new state for the clicked word.
             if (words[i].word === word.word) {
-                words[i].show = newShow;
+                words[i].state = newState;
             }
             //Un-show all other words.
             else {
-                words[i].show = false;
+                if (words[i].cells.size > 0) {
+                    words[i].state = 'FOUND';
+                }
+                else {
+                    words[i].state = '';
+                }
             }
         }
 
@@ -123,7 +140,7 @@
             for (let j = 0; j < grid[0].length; j++) {
                 //If this is a cell for the clicked word, decide whether to show it or not.
                 if (cellsToShow.has(grid[i][j])) {
-                    grid[i][j].state = newShow === true ? 'SHOW' : 'FOUND';
+                    grid[i][j].state = newState === 'SHOW' ? 'SHOW' : 'FOUND';
                 }
                 //Else if it is currently SHOWn, then un-SHOW it.
                 else if (grid[i][j].state === 'SHOW') {
@@ -290,7 +307,7 @@
                 let originalCellState = grid[i][j].state;
                 grid[i][j].state = 'VISITING';
                 //Queue the animation to show that this cell is being examined.
-                this.queueAnimation(i, j, 'VISITING');
+                this.queueGridAnimation(i, j, 'VISITING');
 
                 let result = false;
                 //If the root contains the letter as a child.
@@ -299,7 +316,7 @@
                     usedCells.add(cellIndex);
 
                     //Queue the animation to show we matched a letter.
-                    this.queueAnimation(i, j, 'PARTFOUND');
+                    this.queueGridAnimation(i, j, 'PARTFOUND');
 
                     //Try to find the rest of the word.
                     result = this.wordSearchCellRecurse(grid, words, usedCells, outputHash, trieRoot.Children[grid[i][j].letter], i, j);
@@ -310,7 +327,7 @@
                 //We found a word.
                 if (result === true) {
                     grid[i][j].state = 'FOUND';
-                    this.queueAnimation(i, j, 'FOUND');
+                    this.queueGridAnimation(i, j, 'FOUND');
 
                     //We found a word and the node has no children, so delete the node.
                     if (Object.keys(trieRoot.Children[grid[i][j].letter].Children).length === 0) {
@@ -324,7 +341,7 @@
                 //We didn't find a word.
                 else {
                     grid[i][j].state = originalCellState;
-                    this.queueAnimation(i, j, originalCellState);
+                    this.queueGridAnimation(i, j, originalCellState);
                 }
             }
         }
@@ -340,10 +357,14 @@
                 outputHash.add(curNode.Word);
                 foundWord = true;
 
-                //Update the words with the cells which match it.
+                //Update the found word with the cells which match it.
                 for (let i = 0; i < words.length; i++) {
                     if (words[i].word === curNode.Word) {
                         words[i].cells = createDeepCopy(usedCells);
+
+                        //Queue the animation to visually show the word as FOUND.
+                        this.queueWordAnimation(curNode.Word, 'SHOW', 6);
+                        this.queueWordAnimation(curNode.Word, 'FOUND', 0);
                     }
                 }
             }
@@ -370,7 +391,7 @@
 
                 //Queue the animation to show that this cell is being examined.
                 let originalCellState = grid[newRow][newCol].state;
-                this.queueAnimation(newRow, newCol, 'VISITING', 4);
+                this.queueGridAnimation(newRow, newCol, 'VISITING', 4);
 
                 //If this cell's letter is one of the TrieNode's children.
                 if ((grid[newRow][newCol].letter in curNode.Children)) {
@@ -378,7 +399,7 @@
                     usedCells.add(cellIndex);
 
                     //Queue the animation to show that we have matched a letter in this cell.
-                    this.queueAnimation(newRow, newCol, 'PARTFOUND', 6);
+                    this.queueGridAnimation(newRow, newCol, 'PARTFOUND', 6);
 
                     //See if we can find a word using this neighbour
                     let result = this.wordSearchCellRecurse(grid, words, usedCells, outputHash, curNode.Children[grid[newRow][newCol].letter], newRow, newCol);
@@ -393,7 +414,7 @@
                         foundWord = true;
 
                         //Queue the animation.
-                        this.queueAnimation(newRow, newCol, 'FOUND', 6);
+                        this.queueGridAnimation(newRow, newCol, 'FOUND', 6);
 
                         //We found a word and the trie node for that word has no children, so delete the node.
                         if (Object.keys(curNode.Children[grid[newRow][newCol].letter].Children).length === 0) {
@@ -403,7 +424,7 @@
                     //We didn't find a word further up the stack.
                     else {
                         grid[newRow][newCol].state = originalCellState;
-                        this.queueAnimation(newRow, newCol, originalCellState, 6);
+                        this.queueGridAnimation(newRow, newCol, originalCellState, 6);
                     }
 
                 }
@@ -411,9 +432,9 @@
                 else {
                     grid[newRow][newCol].state = originalCellState;
                     //Show the mismsatch...
-                    this.queueAnimation(newRow, newCol, 'MISMATCH', 6);
+                    this.queueGridAnimation(newRow, newCol, 'MISMATCH', 6);
                     //Then return the cell to its original state.
-                    this.queueAnimation(newRow, newCol, originalCellState, 6);
+                    this.queueGridAnimation(newRow, newCol, originalCellState, 6);
                 }
             }
         }
@@ -435,17 +456,28 @@
     Animation Methods
     ***********************************************************/
 
-    queueAnimation = (row, col, cellState, time) => {
+    queueGridAnimation = (row, col, cellState, animationTime) => {
         this.state.animationQueue.push({
+            type: 'GRID',
             row: row,
             col: col,
             cellState: cellState,
-            time: time
+            time: animationTime
+        });
+    }
+
+    queueWordAnimation = (wordString, wordState, animationTime) => {
+        this.state.animationQueue.push({
+            type: 'WORD',
+            wordString: wordString,
+            wordState: wordState,
+            time: animationTime
         });
     }
 
     doAnimation = () => {
         let grid = createDeepCopy(this.state.grid);
+        let words = createDeepCopy(this.state.words);
         let newAnimationState = this.state.animationState;
         let newAnimationIndex = this.state.animationIndex;
         let animationTime = 100;
@@ -454,26 +486,52 @@
             newAnimationState = 'PLAY';
             newAnimationIndex = 0;
 
-            //Reset cell states to 0.
+            //Reset all cell states.
             for (let i = 0; i < grid.length; i++) {
                 for (let j = 0; j < grid[i].length; j++) {
-                    grid[i][j].state = 0;
+                    grid[i][j].state = '';
                 }
+            }
+
+            //Reset all word states.
+            for (let i = 0; i < words.length; i++) {
+                words[i].state = '';
             }
         }
         else if (this.state.animationState === 'PLAY') {
             if (this.state.animationIndex < this.state.animationQueue.length) {
                 let animation = this.state.animationQueue[this.state.animationIndex];
-                grid[animation.row][animation.col].state = animation.cellState;
+                if (animation.type === 'GRID') {
+                    grid[animation.row][animation.col].state = animation.cellState;
+                }
+                else if (animation.type === 'WORD') {
+                    //Iterate through the words and set the new state from the animation queue for the correct word.
+                    for (let i = 0; i < words.length; i++) {
+                        if (words[i].word === animation.wordString) {
+                            words[i].state = animation.wordState;
+                        }
+                    }
+                }
                 animationTime = 50 * (animation.time || 1);
                 newAnimationIndex = this.state.animationIndex + 1;
             }
         }
         else if (this.state.animationState === 'SKIP') {
             let i = this.state.animationIndex;
+            //Iterate through the remainder of the animation queue and apply all animations in one go.
             while (i < this.state.animationQueue.length) {
                 let animation = this.state.animationQueue[i];
-                grid[animation.row][animation.col].state = animation.cellState;
+                if (animation.type === 'GRID') {
+                    grid[animation.row][animation.col].state = animation.cellState;
+                }
+                else if (animation.type === 'WORD') {
+                    //Iterate through the words and set the new state from the animation queue for the correct word.
+                    for (let i = 0; i < words.length; i++) {
+                        if (words[i].word === animation.wordString) {
+                            words[i].state = animation.wordState;
+                        }
+                    }
+                }
                 i++;
             }
             newAnimationIndex = i;
@@ -487,6 +545,7 @@
         //Set the state now that the latest animation has been applied.
         this.setState({
             grid: grid,
+            words: words,
             animationState: newAnimationState,
             animationIndex: newAnimationIndex
         }, () => {
@@ -501,7 +560,7 @@
         //Set all words to be not shown.
         let words = createDeepCopy(this.state.words);
         for (let i = 0; i < words.length; i++) {
-            words[i].show = false;
+            words[i].state = '';
         }
         
         this.setState({
@@ -539,7 +598,7 @@
         let words = createDeepCopy(this.state.words);
         for (let i = 0; i < words.length; i++) {
             words[i].cells = new Set(); //Cells will be re-populated by the word search algorithm.
-            words[i].show = false; //No words are "show me"d yet.
+            words[i].state = ''; //No words are "show me"d yet.
         }
         //Clean words.
         let distinctWords = new Set();
@@ -589,12 +648,28 @@
             }, () => {
                 //Ensure that the word search algorithm and the animation only start AFTER the grid state has been updated/populated.
                 let wordSearchResult = this.wordSearch();
+
+                //Reset the grid cells states ready for the animation to start.
+                for (let i = 0; i < wordSearchResult.grid.length; i++) {
+                    for (let j = 0; j < wordSearchResult.grid[i].length; j++) {
+                        wordSearchResult.grid[i][j].state = '';
+                    }
+                }
+
+                //Reset the word states ready for the animation to start.
+                for (let i = 0; i < wordSearchResult.words.length; i++) {
+                    wordSearchResult.words[i].state = '';
+                }
+
                 this.setState({
                     grid: wordSearchResult.grid,
                     words: wordSearchResult.words,
                     wordsAndGridInSync: true
+                }, () => {
+                    //The first animation should only happen AFTER the grid and words have been updated using the wordSearch algorithm
+                    //and AFTER the grid and word states have been reset.
+                    this.doAnimation();
                 });
-                this.doAnimation();
             });
         });
     }
@@ -653,17 +728,28 @@
     getCellClass = (cell) => {
         switch (cell.state) {
             case 'VISITING':
-                return "grid-cell grid-cell-visiting";
+                return "grid-cell word-search-visiting";
             case 'PARTFOUND':
-                return "grid-cell grid-cell-partfound";
+                return "grid-cell word-search-partfound";
             case 'FOUND':
-                return "grid-cell grid-cell-found";
+                return "grid-cell word-search-found";
             case 'MISMATCH':
-                return "grid-cell grid-cell-mismatch";
+                return "grid-cell word-search-mismatch";
             case 'SHOW':
-                return "grid-cell grid-cell-show";
+                return "grid-cell word-search-show";
             default:
                 return "grid-cell";
+        }
+    }
+
+    getWordInputClass = (word) => {
+        switch (word.state) {
+            case 'FOUND':
+                return "search-word word-search-found";
+            case 'SHOW':
+                return "search-word word-search-show";
+            default:
+                return "search-word";
         }
     }
 
@@ -679,8 +765,8 @@
         }
         else {
             //If the "Show Me" button has been clicked for this word.
-            if (word.show === true) {
-                return "show-me-button"
+            if (word.state === 'SHOW') {
+                return "word-search-show"
             }
         }
         return "";
@@ -716,7 +802,7 @@
                 <div
                     key={index}>
                     <input
-                        className="search-word"
+                        className={this.getWordInputClass(word)}
                         readOnly={this.isAnimationRunning()}
                         maxLength="13"
                         value={word.word}
