@@ -370,11 +370,12 @@
             }
         }
 
+        //Clockwise order: up, right, down, left
         let neighbouringCells = [
+            [-1, 0],
             [0, 1],
             [1, 0],
-            [0, -1],
-            [-1, 0]
+            [0, -1]
         ];
 
         //Iterate through neighbouring cells.
