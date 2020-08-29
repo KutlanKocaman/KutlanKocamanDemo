@@ -40,7 +40,7 @@
             wordsAndGridInSync: false,
             rowCount: rows,
             columnCount: cols,
-            maxRows: 40,
+            maxRows: 20,
             grid: grid,
             animationQueue: [],
             animationIndex: 0,
