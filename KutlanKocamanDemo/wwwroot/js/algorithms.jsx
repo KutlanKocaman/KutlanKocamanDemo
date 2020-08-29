@@ -45,7 +45,8 @@
             animationQueue: [],
             animationIndex: 0,
             animationState: 'PLAY',
-            animationCancellationToken: null
+            animationCancellationToken: null,
+            animationSpeed: 100
         }
     }
 
@@ -485,7 +486,12 @@
         let words = createDeepCopy(this.state.words);
         let newAnimationState = this.state.animationState;
         let newAnimationIndex = this.state.animationIndex;
-        let animationTime = 100;
+        let animationTime = 50 / (this.state.animationSpeed * 0.01);
+
+        //If the words and grid are out of sync, then stop the animation.
+        if (!this.state.wordsAndGridInSync) {
+            return;
+        }
 
         if (this.state.animationState === 'REPLAY') {
             newAnimationState = 'PLAY';
@@ -517,7 +523,7 @@
                         }
                     }
                 }
-                animationTime = 50 * (animation.time || 1);
+                animationTime = animationTime * (animation.time || 1);
                 newAnimationIndex = this.state.animationIndex + 1;
             }
         }
@@ -592,6 +598,14 @@
         else {
             return false;
         }
+    }
+
+    changeAnimationSpeed = (event) => {
+        let speed = event.target.value;
+
+        this.setState({
+            animationSpeed: speed
+        });
     }
 
     /***********************************************************
@@ -792,15 +806,6 @@
         }
     }
 
-    getAnimationControlButtonClass = () => {
-        if (this.state.wordsAndGridInSync !== true) {
-            return "grid-control-button hidden";
-        }
-        else {
-            return "grid-control-button";
-        }
-    }
-
     /***********************************************************
     React Render Method
     ***********************************************************/
@@ -890,7 +895,8 @@
 
                 <button
                     title="Play/Pause"
-                    className={this.getAnimationControlButtonClass()}
+                    className="grid-control-button"
+                    disabled={!this.state.wordsAndGridInSync}
                     onClick={() => {
                         this.setState({
                             animationState: this.state.animationState === 'PLAY' ? 'Pause' : 'PLAY'
@@ -899,7 +905,8 @@
                 >{this.state.animationState === 'PLAY' ? '⏸️' : '▶️'}</button>
                 <button
                     title="Skip to the end"
-                    className={this.getAnimationControlButtonClass()}
+                    className="grid-control-button"
+                    disabled={!this.state.wordsAndGridInSync}
                     onClick={() => {
                         this.setState({
                             animationState: this.animationState === 'STOP' ? 'STOP' : 'SKIP'
@@ -908,9 +915,25 @@
                 >⏭️</button>
                 <button 
                     title="Replay"
-                    className={this.getAnimationControlButtonClass()}
+                    className="grid-control-button"
+                    disabled={!this.state.wordsAndGridInSync}
                     onClick={this.replayAnimation}
                 >🔄️</button>
+                <br />
+                <label
+                    htmlFor="animationSpeedRange"
+                    className="word-search-speed-label"
+                >Animation Speed:</label>
+                <input
+                    id="animationSpeedRange"
+                    type="range"
+                    min="25"
+                    max="300"
+                    className="custom-range word-search-speed-range"
+                    disabled={!this.state.wordsAndGridInSync}
+                    value={this.state.animationSpeed}
+                    onChange={(event) => this.changeAnimationSpeed(event)}
+                />
                 <table>
                     <tbody>
                         {gridRows}
