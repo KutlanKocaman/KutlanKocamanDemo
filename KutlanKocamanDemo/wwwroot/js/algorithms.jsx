@@ -422,7 +422,8 @@
                             delete curNode.Children[grid[newRow][newCol].letter];
 
                             //If this TrieNode no longer has any children, then don't bother iterating through any remaining neighbours.
-                            if (curNode.Children.size === 0) {
+                            if (curNode.Children.size === 0
+                                && Object.keys(curNode.Children).length === 0) { //Work around for Set.size not always returning the correct value.
                                 break;
                             }
                         }
