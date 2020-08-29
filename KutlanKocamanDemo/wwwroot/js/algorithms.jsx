@@ -871,6 +871,7 @@
                 <label>How Many Rows and Columns?</label>
                 <input
                     className="row-count-input"
+                    disabled={this.isAnimationRunning()}
                     maxLength="2"
                     value={this.state.rowCount}
                     onKeyDown={(event) => {
