@@ -385,6 +385,12 @@
             let newCol = col + neighbouringCells[i][1];
             let cellIndex = this.getCellIndex(newRow, newCol);
 
+            //If the curNode has no children, stop iterating through neighbouring cells.
+            if (curNode.Children.size === 0
+                && Object.keys(curNode.Children).length === 0) { //Work around for Set.size not always returning the correct value.
+                break;
+            }
+
             //If the row and column indexes are valid on the grid
             //and the cell has not already been used to match this word.
             if (newRow >= 0 && newRow < grid.length
@@ -420,12 +426,6 @@
                         //We found a word and the trie node for that word has no children, so delete the node.
                         if (Object.keys(curNode.Children[grid[newRow][newCol].letter].Children).length === 0) {
                             delete curNode.Children[grid[newRow][newCol].letter];
-
-                            //If this TrieNode no longer has any children, then don't bother iterating through any remaining neighbours.
-                            if (curNode.Children.size === 0
-                                && Object.keys(curNode.Children).length === 0) { //Work around for Set.size not always returning the correct value.
-                                break;
-                            }
                         }
                     }
                     //We didn't find a word further up the stack.
