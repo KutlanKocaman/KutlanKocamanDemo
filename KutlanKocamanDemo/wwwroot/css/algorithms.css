@@ -43,6 +43,7 @@ input.word-search-show:read-only {
 
 .row-count-input {
     margin-left: 0.3em;
+    margin-bottom: 0.5em;
     width: 2.8em;
     display: inline;
 }
@@ -80,10 +81,12 @@ input.word-search-show:read-only {
 
 .word-search-found {
     background-color: var(--word-search-found-colour);
+    transition: 0.2s;
 }
 
 .word-search-show {
     background-color: var(--word-search-show-colour);
+    transition: 0.2s;
 }
 
 .word-search-partfound {
