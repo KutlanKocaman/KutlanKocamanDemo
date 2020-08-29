@@ -1,4 +1,9 @@
-﻿.hidden {
+﻿body {
+    --word-search-found-colour: #7cfc00;
+    --word-search-show-colour: #fcfb00;
+}
+
+.hidden {
     visibility: hidden;
 }
 
@@ -9,15 +14,26 @@
 
 input.search-word {
     text-transform: uppercase;
-    width: 13em;
+    width: 12em;
+    display: inline;
+}
+
+input.word-search-found:read-only {
+    background-color: var(--word-search-found-colour);
+}
+
+input.word-search-show:read-only {
+    background-color: var(--word-search-show-colour);
 }
 
 .remove-word-button {
-    width: 2em;
-    height: 1.9em;
     margin-right: 0.2em;
     margin-bottom: 0.3em;
-    line-height: 0px; /* Center align minus text */
+}
+
+.show-me-button {
+    margin-bottom: 0.3em;
+    background-color: var(--colour-2);
 }
 
 .add-word-button {
@@ -27,12 +43,22 @@ input.search-word {
 
 .row-count-input {
     margin-left: 0.3em;
-    width: 2em;
+    width: 2.8em;
+    display: inline;
+}
+
+.start-search-button {
+    margin-bottom: 0.2em;
+    margin-right: 0.2em;
 }
 
 .grid-control-button {
+    margin-top: 1px;
     margin-bottom: 0.2em;
     margin-right: 0.2em;
+    padding: 0em;
+    padding-bottom: 2px;
+    font-size: 25px;
 }
 
 .word-search-speed-label {
@@ -53,17 +79,17 @@ input.search-word {
 }
 
 .word-search-found {
-    background-color: #7cfc00;
+    background-color: var(--word-search-found-colour);
 }
 
 .word-search-show {
-    background-color: #fcfb00;
+    background-color: var(--word-search-show-colour);
 }
 
 .word-search-partfound {
-    background-color: #f5a500;
+    background-color: #ffc107;
 }
 
 .word-search-mismatch {
-    background-color: red;
+    background-color: #dc3545;
 }

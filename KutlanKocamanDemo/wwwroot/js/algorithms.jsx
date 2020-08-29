@@ -765,16 +765,16 @@
 
     getWordInputClass = (word) => {
         if (!this.state.wordsAndGridInSync) {
-            return "search-word";
+            return "form-control search-word";
         }
 
         switch (word.state) {
             case 'FOUND':
-                return "search-word word-search-found";
+                return "form-control search-word word-search-found";
             case 'SHOW':
-                return "search-word word-search-show";
+                return "form-control search-word word-search-show";
             default:
-                return "search-word";
+                return "form-control search-word";
         }
     }
 
@@ -791,7 +791,10 @@
         else {
             //If the "Show Me" button has been clicked for this word.
             if (word.state === 'SHOW') {
-                return "word-search-show"
+                return "btn show-me-button word-search-show";
+            }
+            else {
+                return "btn show-me-button";
             }
         }
         return "";
@@ -864,13 +867,13 @@
                 <h3>Word Search</h3>
                 {wordsList}
                 <button
-                    className="add-word-button"
+                    className="btn btn-default add-word-button"
                     disabled={this.shouldAddWordBeDisabled()}
                     onClick={() => this.addWord()}
-                >Add a Word</button>
+                >+</button>
                 <label>How Many Rows and Columns?</label>
                 <input
-                    className="row-count-input"
+                    className="form-control row-count-input"
                     disabled={this.isAnimationRunning()}
                     maxLength="2"
                     value={this.state.rowCount}
@@ -891,13 +894,12 @@
                 />
                 <br />
                 <button
-                    className="grid-control-button"
+                    className="btn btn-success start-search-button"
                     onClick={() => this.doWordSearch()}
                 >Start New Search</button>
-
                 <button
                     title="Play/Pause"
-                    className="grid-control-button"
+                    className="btn btn-default grid-control-button"
                     disabled={!this.state.wordsAndGridInSync}
                     onClick={() => {
                         this.setState({
@@ -907,7 +909,7 @@
                 >{this.state.animationState === 'PLAY' ? '⏸️' : '▶️'}</button>
                 <button
                     title="Skip to the end"
-                    className="grid-control-button"
+                    className="btn btn-default grid-control-button"
                     disabled={!this.state.wordsAndGridInSync}
                     onClick={() => {
                         this.setState({
@@ -917,7 +919,7 @@
                 >⏭️</button>
                 <button 
                     title="Replay"
-                    className="grid-control-button"
+                    className="btn btn-default grid-control-button"
                     disabled={!this.state.wordsAndGridInSync}
                     onClick={this.replayAnimation}
                 >🔄️</button>
