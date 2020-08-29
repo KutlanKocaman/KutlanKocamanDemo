@@ -646,6 +646,11 @@
     }
 
     doWordSearch = () => {
+        //If the row/column count input is not a valid number, then return now.
+        if (this.state.rowCount === '') {
+            return;
+        }
+
         let words = this.resetAndCleanWords();
 
         //Set words and animation queue in state.
@@ -712,28 +717,27 @@
 
     updateRowColumnCount = (event) => {
         //Set the new row and column count.
-        let newRowCount = parseInt(event.target.value);
-        let newColCount = parseInt(event.target.value);
+        let newRowColCount = parseInt(event.target.value);
 
-        //If the value in the cell cannot be parsed as an integer then set a valid integer.
-        if (Number.isNaN(newRowCount)) {
-            newRowCount = 0;
-            newColCount = 0;
+        //If the value in the cell cannot be parsed as an integer then set to be blank.
+        if (Number.isNaN(newRowColCount)) {
+            newRowColCount = '';
         }
-
-        //Prevent the grid from being too big.
-        if (newRowCount > this.state.maxRows) {
-            newRowCount = this.state.maxRows;
-            newColCount = this.state.maxRows;
-        }
-        //Prevent the grid from being too small.
-        else if (newRowCount < 0) {
-            newRowCount = 0;
-            newColCount = 0;
+        //It is a valid number.
+        else {
+            //Prevent the grid from being too big.
+            if (newRowColCount > this.state.maxRows) {
+                newRowColCount = this.state.maxRows;
+            }
+            //Prevent the grid from being too small.
+            else if (newRowColCount < 0) {
+                newRowColCount = 0;
+            }
         }
 
         //Create the new empty grid based on the new row and column counts.
-        let grid = createMultiDimensionalArray(newRowCount, newColCount);
+        let newRowColCountInt = newRowColCount === '' ? 0 : newRowColCount;
+        let grid = createMultiDimensionalArray(newRowColCountInt, newRowColCountInt);
         for (let i = 0; i < grid.length; i++) {
             for (let j = 0; j < grid[i].length; j++) {
                 grid[i][j] = { letter: null, state: 0 };
@@ -741,8 +745,8 @@
         }
 
         this.setState({
-            rowCount: newRowCount,
-            colCount: newColCount,
+            rowCount: newRowColCount,
+            colCount: newRowColCount,
             grid: grid,
             wordsAndGridInSync: false
         });
