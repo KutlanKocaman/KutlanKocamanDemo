@@ -7,6 +7,10 @@
     visibility: hidden;
 }
 
+.instructions-list-item {
+    margin-left: -1.5em;
+}
+
 .search-word {
     margin-bottom: 0.2em;
     margin-right: 0.2em;

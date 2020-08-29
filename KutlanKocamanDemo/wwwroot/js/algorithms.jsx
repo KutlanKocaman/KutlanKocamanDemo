@@ -869,6 +869,11 @@
         return (
             <div>
                 <h3>Word Search</h3>
+                <ol>
+                    <li className="instructions-list-item">Enter some words. No duplicates.</li>
+                    <li className="instructions-list-item">Click "Start New Search".</li>
+                    <li className="instructions-list-item">Find the words before the algorithm.</li>
+                </ol>
                 {wordsList}
                 <button
                     className="btn btn-default add-word-button"
