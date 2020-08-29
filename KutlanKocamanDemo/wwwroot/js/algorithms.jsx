@@ -306,9 +306,6 @@
         for (let i = 0; i < grid.length; i++) {
             for (let j = 0; j < grid[0].length; j++) {
                 let originalCellState = grid[i][j].state;
-                grid[i][j].state = 'VISITING';
-                //Queue the animation to show that this cell is being examined.
-                this.queueGridAnimation(i, j, 'VISITING');
 
                 let result = false;
                 //If the root contains the letter as a child.
@@ -323,6 +320,11 @@
                     result = this.wordSearchCellRecurse(grid, words, usedCells, outputHash, trieRoot.Children[grid[i][j].letter], i, j);
 
                     usedCells.delete(cellIndex);
+                }
+                else {
+
+                    //Queue the animation to show we didn't match a letter.
+                    this.queueGridAnimation(i, j, 'MISMATCH');
                 }
 
                 //We found a word.
@@ -748,8 +750,6 @@
 
     getCellClass = (cell) => {
         switch (cell.state) {
-            case 'VISITING':
-                return "grid-cell word-search-visiting";
             case 'PARTFOUND':
                 return "grid-cell word-search-partfound";
             case 'FOUND':

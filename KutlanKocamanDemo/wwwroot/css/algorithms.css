@@ -1,8 +1,4 @@
-﻿body {
-    --show-me-colour: #fcfb00;
-}
-
-.hidden {
+﻿.hidden {
     visibility: hidden;
 }
 
@@ -56,16 +52,12 @@ input.search-word {
     text-align: center;
 }
 
-.word-search-visiting {
-    background-color: deepskyblue;
-}
-
 .word-search-found {
     background-color: #7cfc00;
 }
 
 .word-search-show {
-    background-color: var(--show-me-colour);
+    background-color: #fcfb00;
 }
 
 .word-search-partfound {
