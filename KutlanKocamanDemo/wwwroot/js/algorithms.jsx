@@ -726,7 +726,8 @@
         this.setState({
             rowCount: newRowCount,
             colCount: newColCount,
-            grid: grid
+            grid: grid,
+            wordsAndGridInSync: false
         });
     }
 
@@ -748,6 +749,10 @@
     }
 
     getWordInputClass = (word) => {
+        if (!this.state.wordsAndGridInSync) {
+            return "search-word";
+        }
+
         switch (word.state) {
             case 'FOUND':
                 return "search-word word-search-found";
