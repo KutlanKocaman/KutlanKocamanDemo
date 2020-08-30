@@ -13,13 +13,13 @@
 <hr />
 <div class="container alternate-anchor-colour">
     <div class="row">
-        <div class="col-2 grid-header">
+        <div class="col-5 col-sm-2 grid-header">
             @Html.DisplayNameFor(model => model.CustomerId)
         </div>
-        <div class="col-3 grid-header">
+        <div class="col-7 col-sm-3 grid-header">
             Name
         </div>
-        <div class="col-7 grid-header">
+        <div class="d-none d-sm-block col-sm-7 grid-header">
             Address
         </div>
     </div>
@@ -27,13 +27,13 @@
     {
 <a class="clickable-row" asp-action="Details" asp-route-id="@item.CustomerId">
     <div class="row">
-        <div class="col-2">
+        <div class="col-5 col-sm-2">
             @Html.DisplayFor(modelItem => item.CustomerId)
         </div>
-        <div class="col-3">
+        <div class="col-7 col-sm-3">
             @Html.DisplayFor(modelItem => item.FirstName) @Html.DisplayFor(modelItem => item.LastName)
         </div>
-        <div class="col-7">
+        <div class="d-none d-sm-block col-sm-7">
 
             @Html.DisplayFor(modelItem => item.AddressLine1)
             @if (!String.IsNullOrWhiteSpace(item.AddressLine2)) { Html.DisplayFor(modelItem => item.AddressLine2); }

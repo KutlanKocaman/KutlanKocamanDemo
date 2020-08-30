@@ -156,3 +156,7 @@ input.form-control[readonly]:focus {
     color: var(--hover-text-colour);
     background-color: var(--hover-background-colour);
 }
+
+.nav-button {
+    margin-top: 0.3em;
+}

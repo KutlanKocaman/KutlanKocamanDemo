@@ -7,52 +7,52 @@
 
 <h1>Details for @Html.DisplayFor(model => model.FirstName) @Html.DisplayFor(model => model.LastName)</h1>
 <hr />
-    <a class="btn btn-default" asp-action="Index">Back to Customer List</a>
-    <a class="btn btn-default" asp-action="Edit" asp-route-id="@Model.CustomerId">Edit Details</a>
-    <button type="submit" value="Delete" form="deleteCustomerForm" class="btn btn-default" onclick="return confirm('Are you sure?');">Delete Customer</button>
+    <a class="btn btn-default nav-button" asp-action="Index">Back to Customer List</a>
+    <a class="btn btn-default nav-button" asp-action="Edit" asp-route-id="@Model.CustomerId">Edit Details</a>
+    <button type="submit" value="Delete" form="deleteCustomerForm" class="btn btn-danger nav-button" onclick="return confirm('Are you sure?');">Delete Customer</button>
 <hr />
 <form id="deleteCustomerForm" asp-action="Delete" asp-route-id="@Model.CustomerId" method="post"></form>
 <div>
     <div class="container alternate-div-colour">
         <div class="row">
-            <div class="col-lg-2 col-6">@Html.DisplayNameFor(model => model.CustomerId)</div>
-            <div class="col-lg-10 col-6">@Html.DisplayFor(model => model.CustomerId)</div>
+            <div class="col-5 col-lg-2">@Html.DisplayNameFor(model => model.CustomerId)</div>
+            <div class="col-7 col-lg-10">@Html.DisplayFor(model => model.CustomerId)</div>
         </div>
         <div class="row">
-            <div class="col-lg-2 col-6">@Html.DisplayNameFor(model => model.FirstName)</div>
-            <div class="col-lg-10 col-6">@Html.DisplayFor(model => model.FirstName)</div>
+            <div class="col-5 col-lg-2">@Html.DisplayNameFor(model => model.FirstName)</div>
+            <div class="col-7 col-lg-10">@Html.DisplayFor(model => model.FirstName)</div>
         </div>
         <div class="row">
-            <div class="col-lg-2 col-6">@Html.DisplayNameFor(model => model.LastName)</div>
-            <div class="col-lg-10 col-6">@Html.DisplayFor(model => model.LastName)</div>
+            <div class="col-5 col-lg-2">@Html.DisplayNameFor(model => model.LastName)</div>
+            <div class="col-7 col-lg-10">@Html.DisplayFor(model => model.LastName)</div>
         </div>
         <div class="row">
-            <div class="col-lg-2 col-6">@Html.DisplayNameFor(model => model.DateOfBirth)</div>
-            <div class="col-lg-10 col-6">@Html.DisplayFor(model => model.DateOfBirth)</div>
+            <div class="col-5 col-lg-2">@Html.DisplayNameFor(model => model.DateOfBirth)</div>
+            <div class="col-7 col-lg-10">@Html.DisplayFor(model => model.DateOfBirth)</div>
         </div>
         <div class="row">
-            <div class="col-lg-2 col-6">@Html.DisplayNameFor(model => model.AddressLine1)</div>
-            <div class="col-lg-10 col-6">@Html.DisplayFor(model => model.AddressLine1)</div>
+            <div class="col-5 col-lg-2">@Html.DisplayNameFor(model => model.AddressLine1)</div>
+            <div class="col-7 col-lg-10">@Html.DisplayFor(model => model.AddressLine1)</div>
         </div>
         <div class="row">
-            <div class="col-lg-2 col-6">@Html.DisplayNameFor(model => model.AddressLine2)</div>
-            <div class="col-lg-10 col-6">@Html.DisplayFor(model => model.AddressLine2)</div>
+            <div class="col-5 col-lg-2">@Html.DisplayNameFor(model => model.AddressLine2)</div>
+            <div class="col-7 col-lg-10">@Html.DisplayFor(model => model.AddressLine2)</div>
         </div>
         <div class="row">
-            <div class="col-lg-2 col-6">@Html.DisplayNameFor(model => model.AddressLine3)</div>
-            <div class="col-lg-10 col-6">@Html.DisplayFor(model => model.AddressLine3)</div>
+            <div class="col-5 col-lg-2">@Html.DisplayNameFor(model => model.AddressLine3)</div>
+            <div class="col-7 col-lg-10">@Html.DisplayFor(model => model.AddressLine3)</div>
         </div>
         <div class="row">
-            <div class="col-lg-2 col-6">@Html.DisplayNameFor(model => model.Locality)</div>
-            <div class="col-lg-10 col-6">@Html.DisplayFor(model => model.Locality)</div>
+            <div class="col-5 col-lg-2">@Html.DisplayNameFor(model => model.Locality)</div>
+            <div class="col-7 col-lg-10">@Html.DisplayFor(model => model.Locality)</div>
         </div>
         <div class="row">
-            <div class="col-lg-2 col-6">@Html.DisplayNameFor(model => model.County)</div>
-            <div class="col-lg-10 col-6">@Html.DisplayFor(model => model.County)</div>
+            <div class="col-5 col-lg-2">@Html.DisplayNameFor(model => model.County)</div>
+            <div class="col-7 col-lg-10">@Html.DisplayFor(model => model.County)</div>
         </div>
         <div class="row">
-            <div class="col-lg-2 col-6">@Html.DisplayNameFor(model => model.PostCode)</div>
-            <div class="col-lg-10 col-6">@Html.DisplayFor(model => model.PostCode)</div>
+            <div class="col-5 col-lg-2">@Html.DisplayNameFor(model => model.PostCode)</div>
+            <div class="col-7 col-lg-10">@Html.DisplayFor(model => model.PostCode)</div>
         </div>
     </div>
 </div>

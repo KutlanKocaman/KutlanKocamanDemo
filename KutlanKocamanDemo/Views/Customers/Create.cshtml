@@ -10,12 +10,12 @@
 <p>
     @if (!(bool)ViewData["CustomerLimitReached"])
     {
-        <a class="btn btn-default" asp-action="Index" onclick="return confirm('Are you sure?');">Back to Customer List</a>
-        <button type="submit" value="Create" form="newCustomerForm" class="btn btn-default">Create Customer</button>
+        <a class="btn btn-default nav-button" asp-action="Index" onclick="return confirm('Are you sure?');">Back to Customer List</a>
+        <button type="submit" value="Create" form="newCustomerForm" class="btn btn-default nav-button">Create Customer</button>
     }
     else
     {
-        <a class="btn btn-default" asp-action="Index">Back to Customer List</a>
+        <a class="btn btn-default nav-button" asp-action="Index">Back to Customer List</a>
     }
 </p>
 <hr />
@@ -32,88 +32,89 @@ else
     <form id="newCustomerForm" asp-action="Create" class="alternate-div-colour">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="row">
-            <div class="col-6 col-lg-2">
+            <div class="col-5 col-lg-2">
                 <label asp-for="FirstName" class="control-label label-edit"></label>
             </div>
-            <div class="col-6 col-lg-4">
+            <div class="col-7 col-lg-4">
                 <input asp-for="FirstName" class="form-control input-edit" />
                 <span asp-validation-for="FirstName" class="text-danger"></span>
             </div>
         </div>
         <div class="row">
-            <div class="col-6 col-lg-2">
+            <div class="col-5 col-lg-2">
                 <label asp-for="LastName" class="control-label label-edit"></label>
             </div>
-            <div class="col-6 col-lg-4">
+            <div class="col-7 col-lg-4">
                 <input asp-for="LastName" class="form-control input-edit" />
                 <span asp-validation-for="LastName" class="text-danger"></span>
             </div>
         </div>
         <div class="row">
-            <div class="col-6 col-lg-2">
+            <div class="col-5 col-lg-2">
                 <label asp-for="DateOfBirth" class="control-label label-edit"></label>
             </div>
-            <div class="col-6 col-lg-4">
+            <div class="col-7 col-lg-4">
                 <input asp-for="DateOfBirth" class="form-control input-edit" />
                 <span asp-validation-for="DateOfBirth" class="text-danger"></span>
             </div>
         </div>
         <div class="row">
-            <div class="col-6 col-lg-2">
+            <div class="col-5 col-lg-2">
                 <label asp-for="AddressLine1" class="control-label label-edit"></label>
             </div>
-            <div class="col-6 col-lg-4">
+            <div class="col-7 col-lg-4">
                 <input asp-for="AddressLine1" class="form-control input-edit" />
                 <span asp-validation-for="AddressLine1" class="text-danger"></span>
             </div>
         </div>
         <div class="row">
-            <div class="col-6 col-lg-2">
+            <div class="col-5 col-lg-2">
                 <label asp-for="AddressLine2" class="control-label label-edit"></label>
             </div>
-            <div class="col-6 col-lg-4">
+            <div class="col-7 col-lg-4">
                 <input asp-for="AddressLine2" class="form-control input-edit" />
                 <span asp-validation-for="AddressLine2" class="text-danger"></span>
             </div>
         </div>
         <div class="row">
-            <div class="col-6 col-lg-2">
+            <div class="col-5 col-lg-2">
                 <label asp-for="AddressLine3" class="control-label label-edit"></label>
             </div>
-            <div class="col-6 col-lg-4">
+            <div class="col-7 col-lg-4">
                 <input asp-for="AddressLine3" class="form-control input-edit" />
                 <span asp-validation-for="AddressLine3" class="text-danger"></span>
             </div>
         </div>
         <div class="row">
-            <div class="col-6 col-lg-2">
+            <div class="col-5 col-lg-2">
                 <label asp-for="Locality" class="control-label label-edit"></label>
             </div>
-            <div class="col-6 col-lg-4">
+            <div class="col-7 col-lg-4">
                 <input asp-for="Locality" class="form-control input-edit" />
                 <span asp-validation-for="Locality" class="text-danger"></span>
             </div>
         </div>
         <div class="row">
-            <div class="col-6 col-lg-2">
+            <div class="col-5 col-lg-2">
                 <label asp-for="County" class="control-label label-edit"></label>
             </div>
-            <div class="col-6 col-lg-4">
+            <div class="col-7 col-lg-4">
                 <input asp-for="County" class="form-control input-edit" />
                 <span asp-validation-for="County" class="text-danger"></span>
             </div>
         </div>
         <div class="row">
-            <div class="col-6 col-lg-2">
+            <div class="col-5 col-lg-2">
                 <label asp-for="PostCode" class="control-label label-edit"></label>
             </div>
-            <div class="col-6 col-lg-4">
+            <div class="col-7 col-lg-4">
                 <input asp-for="PostCode" class="form-control input-edit" />
                 <span asp-validation-for="PostCode" class="text-danger"></span>
             </div>
         </div>
     </form>
 </div>
+<button type="submit" value="Create" form="newCustomerForm" class="btn btn-default nav-button">Create Customer</button>
 }
 
 @section Scripts {
