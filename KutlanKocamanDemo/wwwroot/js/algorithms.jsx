@@ -874,6 +874,51 @@
                     <li className="instructions-list-item">Click "Start New Search".</li>
                     <li className="instructions-list-item">Find the words before the algorithm.</li>
                 </ol>
+                <p>
+                    Words can move across the grid horizontally<br />
+                    or vertically - not diagonally.<br />
+                    The direction of a word can change mid-word.<br />
+                    The same cell can only be used once per word.
+                </p>
+                <button type="button" className="btn btn-default detailed-information-button" data-toggle="modal" data-target="#exampleModalLong">
+                    Detailed Information
+                </button>
+                <div className="modal fade" id="exampleModalLong" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                    <div className="modal-dialog" role="document">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title" id="exampleModalLongTitle">Detailed Information</h5>
+                                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div className="modal-body">
+                                <p>
+                                    The algorithm is based
+                                    on the <a href="https://leetcode.com/problems/word-search-ii/" target="_blank">WordSearch II</a> algorithm
+                                    from <a href="https://leetcode.com/" target="_blank">LeetCode.com</a>. LeetCode have very good, detailed
+                                    break-down of how the algorithm works.
+                                </p>
+                                <p>
+                                    I've made a few changes to the LeetCode version.
+                                    Firstly, I've added the animations.
+                                    Secondly, I've made it stop searching through the grid when the trie is empty.
+                                    Thirdly, I've made it stop iterating through neighbouring cells if there are no more words that can be found
+                                    from the current position.
+                                    The last two modifications don't change the big-O time complexity of the algorithm, but they do make the
+                                    animation look better, because it doesn't keep looking for words when there aren't any to find.
+                                </p>
+                                <p>
+                                    The clever thing about the algorithm is the use of a trie, or prefix tree, data structure.
+                                    This prevents the time complexity of the algorithm increasing with the number of words to be searched.
+                                </p>
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 {wordsList}
                 <button
                     className="btn btn-default add-word-button"
