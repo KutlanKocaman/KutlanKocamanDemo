@@ -881,13 +881,13 @@
                     The same cell can only be used once per word.
                 </p>
                 <button type="button" className="btn btn-default detailed-information-button" data-toggle="modal" data-target="#exampleModalLong">
-                    Detailed Information
+                    More Information
                 </button>
                 <div className="modal fade" id="exampleModalLong" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
                     <div className="modal-dialog" role="document">
                         <div className="modal-content">
                             <div className="modal-header">
-                                <h5 className="modal-title" id="exampleModalLongTitle">Detailed Information</h5>
+                                <h5 className="modal-title" id="exampleModalLongTitle">More Information</h5>
                                 <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
