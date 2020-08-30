@@ -13,6 +13,5 @@
 <button type="submit" form="resendVerificationEmail" asp-page="./Login" asp-page-handler="SendVerificationEmail" class="btn btn-default">Resend verification email</button>
 <form id="resendVerificationEmail" method="post">
     <input hidden name="email" value="@Model.Email" />
-    <input hidden name="password" value="Password1." />
-    <input hidden name="RememberMe" type="checkbox" />
+    <input hidden name="password" value="N/A" />
 </form>
