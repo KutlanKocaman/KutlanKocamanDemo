@@ -1,4 +1,8 @@
-﻿class WordSearch extends React.Component {
+﻿import React from "react";
+import TrieNode from "../shared/trie-node";
+import { createMultiDimensionalArray, createDeepCopy, randomBetweenInclusive } from "../shared/functions";
+
+class WordSearch extends React.Component {
     constructor(props) {
         super(props)
 
@@ -174,7 +178,7 @@
                 }
             }
         }
-        
+
         //Iterate through each word and place them on the grid in randomly.
         for (let w = 0; w < words.length; w++) {
             let row, col;
@@ -298,7 +302,7 @@
                 }
             }
         }
-        
+
         let outputHash = new Set();
         let usedCells = new Set();
 
@@ -576,7 +580,7 @@
         for (let i = 0; i < words.length; i++) {
             words[i].state = '';
         }
-        
+
         this.setState({
             animationState: 'STOP',
             words: words
@@ -668,7 +672,7 @@
 
             //Ensure that the grid is only populated AFTER the words have been reset and cleaned.
             let grid = this.populateGrid();
-            
+
             this.setState({
                 grid: grid,
                 animationState: 'PLAY'
@@ -971,7 +975,7 @@
                         });
                     }}
                 >⏭️</button>
-                <button 
+                <button
                     title="Replay"
                     className="btn btn-default grid-control-button"
                     disabled={!this.state.wordsAndGridInSync}
@@ -1002,64 +1006,4 @@
     }
 }
 
-ReactDOM.render(<WordSearch />, document.getElementById('content'));
-/**********************************************************
-Classes
-**********************************************************/
-
-class TrieNode {
-    constructor(val) {
-        this.Val = val;
-        this.Children = new Set();
-        this.Word = '';
-    }
-}
-
-/**********************************************************
-Functions
-**********************************************************/
-
-function createMultiDimensionalArray(length) {
-    var arr = new Array(length || 0),
-        i = length;
-
-    if (arguments.length > 1) {
-        var args = Array.prototype.slice.call(arguments, 1);
-        while (i--) arr[length - 1 - i] = createMultiDimensionalArray.apply(this, args);
-    }
-
-    return arr;
-}
-
-function createDeepCopy(input) {
-    let output, value, key
-
-    //Return the value if object is not an object
-    if (typeof input !== "object" || input === null) {
-        return input;
-    }
-
-    //If the object is a Set then copy the Set and return it.
-    if (input.constructor.name === 'Set') {
-        output = new Set();
-        for (let item of input) {
-            output.add(createDeepCopy(item));
-        }
-    }
-    //If the input is another kind of object or an array, copy it and return it.
-    else {
-        output = Array.isArray(input) ? [] : {};
-        for (key in input) {
-            value = input[key];
-
-            //Recursively deep copy nested objects.
-            let result = createDeepCopy(value);
-            output[key] = result;
-        }
-    }
-    return output;
-}
-
-function randomBetweenInclusive(min, max) {
-    return Math.floor(Math.random() * (max - min + 1) + min);
-}
+export default WordSearch;
