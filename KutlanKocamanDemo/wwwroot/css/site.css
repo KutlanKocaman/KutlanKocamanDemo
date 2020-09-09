@@ -1,5 +1,78 @@
-﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-for details on configuring this project to bundle and minify static web assets. */
+﻿/* Variables
+-------------------------------------------------- */
+
+body {
+    --primary-colour: #1338d3;
+    --primary-hover-colour: #000000;
+    --colour-1: #8080801a;
+    --colour-2: #365bd229;
+    --hover-text-colour: white;
+    --row-border-radius: 0.25rem;
+}
+
+/* Font
+-------------------------------------------------- */
+
+html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+
+/* Header
+-------------------------------------------------- */
+
+.header-logo {
+    height: 2.5em;
+    padding-top: 0.1em;
+}
+
+/* Footer
+-------------------------------------------------- */
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    /* Stop page overlapping footer */
+    margin-bottom: 60px;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    white-space: nowrap;
+    line-height: 60px; /* Vertically center the text there */
+}
+
+/* Cookie policy
+-------------------------------------------------- */
+
+button.accept-policy {
+    font-size: 1rem;
+    line-height: inherit;
+}
+
+/* Headers
+-------------------------------------------------- */
+
+h1 {
+    margin-bottom: 1em;
+}
+
+/* Links and buttons
+-------------------------------------------------- */
+
+a {
+    color: #0366d6;
+}
 
 a.navbar-brand {
   white-space: normal;
@@ -7,84 +80,35 @@ a.navbar-brand {
   word-break: break-all;
 }
 
-/* Provide sufficient contrast against white background */
-a {
-  color: #0366d6;
-}
-
-.btn-primary {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+.nav-button {
+    /* Spacing for smaller screens */
+    margin-top: 0.3em;
 }
 
 .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+    color: #fff;
+    background-color: var(--primary-hover-colour);
+    border-color: #5f85ffba;
 }
 
-/* Sticky footer styles
+.btn-primary {
+    color: #fff;
+    background-color: var(--primary-colour);
+    border-color: var(--primary-colour);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover-colour);
+}
+
+.btn-primary:disabled {
+    color: #fff;
+    background-color: var(--primary-colour);
+    border-color: var(--primary-colour);
+}
+
+/* Form
 -------------------------------------------------- */
-html {
-  font-size: 14px;
-}
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.border-top {
-  border-top: 1px solid #e5e5e5;
-}
-.border-bottom {
-  border-bottom: 1px solid #e5e5e5;
-}
-
-.box-shadow {
-  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
-}
-
-button.accept-policy {
-  font-size: 1rem;
-  line-height: inherit;
-}
-
-/* Sticky footer styles
--------------------------------------------------- */
-html {
-  position: relative;
-  min-height: 100%;
-}
-
-body {
-  /* Margin bottom by footer height */
-  margin-bottom: 60px;
-}
-.footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  white-space: nowrap;
-  line-height: 60px; /* Vertically center the text there */
-}
-
-/*
-    Custom site styles ******************************
-*/
-
-body {
-    --colour-1: #8080801a;
-    --colour-2: #365bd229;
-    --hover-background-colour: #1b6ec2;
-    --hover-text-colour: white;
-    --row-border-radius: 0.25rem;
-}
-
-h1 {
-    margin-bottom: 1em;
-}
 
 label.label-edit {
     margin-top: 0.3em;
@@ -96,10 +120,6 @@ input.input-edit {
     margin-bottom: 0.1em;
 }
 
-.row {
-    border-radius: var(--row-border-radius);
-}
-
 input.form-control[readonly] {
     background-color: rgba(0, 0 ,0 ,0);
     border: none;
@@ -109,12 +129,19 @@ input.form-control[readonly]:focus {
     box-shadow: none;
 }
 
+/* Bootstrap grid
+-------------------------------------------------- */
+
 .grid-header {
     font-size: large;
     font-weight: bold;
     padding-top: 0.3em;
     padding-bottom: 0.2em;
     margin-bottom: 0.2em;
+}
+
+.row {
+    border-radius: var(--row-border-radius);
 }
 
 .alternate-div-colour > div:nth-child(even) {
@@ -135,7 +162,7 @@ input.form-control[readonly]:focus {
 
 .alternate-anchor-colour .clickable-row:hover {
     color: var(--hover-text-colour);
-    background-color: var(--hover-background-colour);
+    background-color: var(--primary-colour);
 }
 
 .clickable-row {
@@ -145,18 +172,4 @@ input.form-control[readonly]:focus {
     margin-right: -15px;
     padding-right: 15px;
     border-radius: var(--row-border-radius);
-}
-
-.btn-default {
-    color: black;
-    background-color: var(--colour-2);
-}
-
-.btn-default:hover {
-    color: var(--hover-text-colour);
-    background-color: var(--hover-background-colour);
-}
-
-.nav-button {
-    margin-top: 0.3em;
 }

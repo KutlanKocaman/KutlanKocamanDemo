@@ -7,8 +7,8 @@
 
 <h1>Details for @Html.DisplayFor(model => model.FirstName) @Html.DisplayFor(model => model.LastName)</h1>
 <hr />
-    <a class="btn btn-default nav-button" asp-action="Index">Back to Customer List</a>
-    <a class="btn btn-default nav-button" asp-action="Edit" asp-route-id="@Model.CustomerId">Edit Details</a>
+    <a class="btn btn-primary nav-button" asp-action="Index">Back to Customer List</a>
+    <a class="btn btn-primary nav-button" asp-action="Edit" asp-route-id="@Model.CustomerId">Edit Details</a>
     <button type="submit" value="Delete" form="deleteCustomerForm" class="btn btn-danger nav-button" onclick="return confirm('Are you sure?');">Delete Customer</button>
 <hr />
 <form id="deleteCustomerForm" asp-action="Delete" asp-route-id="@Model.CustomerId" method="post"></form>

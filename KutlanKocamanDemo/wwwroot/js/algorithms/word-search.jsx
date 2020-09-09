@@ -884,7 +884,7 @@ class WordSearch extends React.Component {
                     The direction of a word can change mid-word.<br />
                     The same cell can only be used once per word.
                 </p>
-                <button type="button" className="btn btn-default detailed-information-button" data-toggle="modal" data-target="#exampleModalLong">
+                <button type="button" className="btn btn-primary detailed-information-button" data-toggle="modal" data-target="#exampleModalLong">
                     More Information
                 </button>
                 <div className="modal fade" id="exampleModalLong" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
@@ -925,7 +925,7 @@ class WordSearch extends React.Component {
                 </div>
                 {wordsList}
                 <button
-                    className="btn btn-default add-word-button"
+                    className="btn btn-primary add-word-button"
                     disabled={this.shouldAddWordBeDisabled()}
                     onClick={() => this.addWord()}
                 >+</button>
@@ -957,7 +957,7 @@ class WordSearch extends React.Component {
                 >Start New Search</button>
                 <button
                     title="Play/Pause"
-                    className="btn btn-default grid-control-button"
+                    className="btn btn-primary grid-control-button"
                     disabled={!this.state.wordsAndGridInSync}
                     onClick={() => {
                         this.setState({
@@ -967,7 +967,7 @@ class WordSearch extends React.Component {
                 >{this.state.animationState === 'PLAY' ? '⏸️' : '▶️'}</button>
                 <button
                     title="Skip to the end"
-                    className="btn btn-default grid-control-button"
+                    className="btn btn-primary grid-control-button"
                     disabled={!this.state.wordsAndGridInSync}
                     onClick={() => {
                         this.setState({
@@ -977,7 +977,7 @@ class WordSearch extends React.Component {
                 >⏭️</button>
                 <button
                     title="Replay"
-                    className="btn btn-default grid-control-button"
+                    className="btn btn-primary grid-control-button"
                     disabled={!this.state.wordsAndGridInSync}
                     onClick={this.replayAnimation}
                 >🔄️</button>

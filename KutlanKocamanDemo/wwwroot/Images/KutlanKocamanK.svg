@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   sodipodi:docname="KutlanKocamanK.svg"
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
+   id="svg8"
+   version="1.1"
+   viewBox="0 0 69.757347 76.171814"
+   height="76.171814mm"
+   width="69.757347mm">
+  <defs
+     id="defs2">
+    <rect
+       id="rect1031"
+       height="12.828937"
+       width="42.228584"
+       y="109.25704"
+       x="95.040337" />
+    <rect
+       id="rect1025"
+       height="12.561668"
+       width="28.063303"
+       y="75.581078"
+       x="93.169449" />
+    <rect
+       id="rect1019"
+       height="28.063299"
+       width="95.94976"
+       y="75.848351"
+       x="89.962219" />
+    <rect
+       id="rect953"
+       height="59.868374"
+       width="62.808338"
+       y="72.641113"
+       x="14.057671" />
+    <rect
+       id="rect865"
+       height="28.063299"
+       width="74.033661"
+       y="102.6315"
+       x="82.051743" />
+    <rect
+       id="rect853"
+       height="17.773422"
+       width="33.141422"
+       y="73.499123"
+       x="82.586281" />
+    <rect
+       id="rect907"
+       height="167.82143"
+       width="159.50595"
+       y="27.970238"
+       x="34.773811" />
+    <rect
+       x="82.586281"
+       y="73.499123"
+       width="56.66114"
+       height="16.30344"
+       id="rect853-6" />
+    <rect
+       x="82.586281"
+       y="73.499123"
+       width="33.141422"
+       height="17.773422"
+       id="rect878" />
+    <rect
+       x="82.586281"
+       y="73.499123"
+       width="57.195679"
+       height="23.118813"
+       id="rect853-68" />
+    <rect
+       x="82.586281"
+       y="73.499123"
+       width="33.141422"
+       height="17.773422"
+       id="rect907-8" />
+    <rect
+       id="rect907-4"
+       height="167.82143"
+       width="159.50595"
+       y="27.970238"
+       x="34.773811" />
+    <rect
+       x="82.586281"
+       y="73.499123"
+       width="33.141422"
+       height="17.773422"
+       id="rect853-66" />
+    <rect
+       x="82.586281"
+       y="73.499123"
+       width="33.141422"
+       height="17.773422"
+       id="rect966" />
+  </defs>
+  <sodipodi:namedview
+     inkscape:window-maximized="1"
+     inkscape:window-y="-8"
+     inkscape:window-x="-8"
+     inkscape:window-height="1017"
+     inkscape:window-width="1920"
+     showgrid="false"
+     inkscape:document-rotation="0"
+     inkscape:current-layer="layer1"
+     inkscape:document-units="mm"
+     inkscape:cy="127.36378"
+     inkscape:cx="301.82881"
+     inkscape:zoom="0.98994949"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     borderopacity="1.0"
+     bordercolor="#666666"
+     pagecolor="#ffffff"
+     id="base" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(-0.26726952,-0.26726952)"
+     inkscape:label="Layer 2"
+     id="layer2"
+     inkscape:groupmode="layer">
+    <rect
+       rx="12.000817"
+       y="0.26726952"
+       x="0.26726952"
+       height="76.171814"
+       width="69.757347"
+       id="rect1015"
+       style="fill:#365bd2;fill-opacity:0.160784;stroke-width:0.260136" />
+  </g>
+  <g
+     transform="translate(-10.583168,-67.562992)"
+     id="layer1"
+     inkscape:groupmode="layer"
+     inkscape:label="Layer 1">
+    <text
+       xml:space="preserve"
+       id="text851-0"
+       style="font-style:normal;font-weight:normal;font-size:7.9375px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect853-66);fill:#1338d3;fill-opacity:1;stroke:none;"
+       transform="matrix(10.067749,0,0,11.629795,-815.40017,-801.32142)"><tspan
+         x="82.585938"
+         y="80.741622"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.9375px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#1338d3;fill-opacity:1">K</tspan></tspan></text>
+    <text
+       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect1019);fill:#000000;fill-opacity:1;stroke:none;"
+       id="text1017"
+       xml:space="preserve" />
+  </g>
+</svg>

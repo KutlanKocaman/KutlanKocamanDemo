@@ -10,7 +10,7 @@
 <p>Please follow the intructions in the email to confirm your account.</p>
 
 <p>If your email doesn't arrive within a couple of minutes, use the button below to re-send the verification email.</p>
-<button type="submit" form="resendVerificationEmail" asp-page="./Login" asp-page-handler="SendVerificationEmail" class="btn btn-default">Resend verification email</button>
+<button type="submit" form="resendVerificationEmail" asp-page="./Login" asp-page-handler="SendVerificationEmail" class="btn btn-primary">Resend verification email</button>
 <form id="resendVerificationEmail" method="post">
     <input hidden name="email" value="@Model.Email" />
     <input hidden name="password" value="N/A" />

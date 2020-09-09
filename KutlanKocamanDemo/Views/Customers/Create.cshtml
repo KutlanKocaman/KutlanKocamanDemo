@@ -10,12 +10,12 @@
 <p>
     @if (!(bool)ViewData["CustomerLimitReached"])
     {
-        <a class="btn btn-default nav-button" asp-action="Index" onclick="return confirm('Are you sure?');">Back to Customer List</a>
-        <button type="submit" value="Create" form="newCustomerForm" class="btn btn-default nav-button">Create Customer</button>
+        <a class="btn btn-primary nav-button" asp-action="Index" onclick="return confirm('Are you sure?');">Back to Customer List</a>
+        <button type="submit" value="Create" form="newCustomerForm" class="btn btn-primary nav-button">Create Customer</button>
     }
     else
     {
-        <a class="btn btn-default nav-button" asp-action="Index">Back to Customer List</a>
+        <a class="btn btn-primary nav-button" asp-action="Index">Back to Customer List</a>
     }
 </p>
 <hr />
@@ -114,7 +114,7 @@ else
         </div>
     </form>
 </div>
-<button type="submit" value="Create" form="newCustomerForm" class="btn btn-default nav-button">Create Customer</button>
+<button type="submit" value="Create" form="newCustomerForm" class="btn btn-primary nav-button">Create Customer</button>
 }
 
 @section Scripts {
