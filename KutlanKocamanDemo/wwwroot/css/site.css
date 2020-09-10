@@ -27,9 +27,13 @@ html {
 /* Header
 -------------------------------------------------- */
 
-.header-logo {
-    height: 2.5em;
+.navbar-logo {
+    height: 40px;
     padding-top: 0.1em;
+}
+
+.navbar-right-pad {
+    width: 8em;
 }
 
 /* Footer
