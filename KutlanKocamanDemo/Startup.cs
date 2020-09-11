@@ -73,6 +73,14 @@ namespace KutlanKocamanDemo
                 microsoftOptions.ClientSecret = Configuration["Authentication:Microsoft:ClientSecret"];
             });
 
+            //Configuration the application cookie.
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.Cookie.Name = "KutlanKocamanDemo";
+                options.Cookie.HttpOnly = true;
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
+                options.SlidingExpiration = true;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
