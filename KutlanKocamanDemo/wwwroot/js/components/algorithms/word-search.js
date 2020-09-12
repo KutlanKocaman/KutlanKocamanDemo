@@ -1,6 +1,9 @@
 ﻿import React from "react";
+import { Row, Col } from "reactstrap";
+import { DocumentTitle } from '../document-title';
 import TrieNode from "../../shared/trie-node";
 import { createMultiDimensionalArray, createDeepCopy, randomBetweenInclusive } from "../../shared/functions";
+import { ModalInformational } from "../modal-info";
 
 class WordSearch extends React.Component {
     constructor(props) {
@@ -16,6 +19,8 @@ class WordSearch extends React.Component {
                 grid[i][j] = { letter: null, state: '' };
             }
         }
+
+        this.maxWords = 20;
 
         this.state = {
             characters: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
@@ -40,7 +45,6 @@ class WordSearch extends React.Component {
                     cells: new Set(),
                     state: ''
                 }],
-            maxWords: 20,
             wordsAndGridInSync: false,
             rowCount: rows,
             columnCount: cols,
@@ -815,7 +819,7 @@ class WordSearch extends React.Component {
 
     shouldAddWordBeDisabled = () => {
         if (this.isAnimationRunning()
-            || this.state.words.length >= this.state.maxWords) {
+            || this.state.words.length >= this.maxWords) {
             return true;
         }
         else {
@@ -876,137 +880,133 @@ class WordSearch extends React.Component {
 
         //Build the Word Search.
         return (
-            <div>
-                <h3>Word Search</h3>
-                <ol>
-                    <li className="instructions-list-item">Enter some words. No duplicates.</li>
-                    <li className="instructions-list-item">Click "Start New Search".</li>
-                    <li className="instructions-list-item">Find the words before the algorithm.</li>
-                </ol>
-                <p>
-                    Words can move across the grid horizontally<br />
-                    or vertically - not diagonally.<br />
-                    The direction of a word can change mid-word.<br />
-                    The same cell can only be used once per word.
-                </p>
-                <button type="button" className="btn btn-primary detailed-information-button" data-toggle="modal" data-target="#exampleModalLong">
-                    More Information
-                </button>
-                <div className="modal fade" id="exampleModalLong" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
-                    <div className="modal-dialog" role="document">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h5 className="modal-title" id="exampleModalLongTitle">More Information</h5>
-                                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
+            <Row>
+                <DocumentTitle documentTitle="Word Search" />
+                <Col>
+                    <h3>Word Search</h3>
+                    <h5>Intructions:</h5>
+                    <ol>
+                        <li className="instructions-list-item">Enter up to {this.maxWords} words. No duplicates.</li>
+                        <li className="instructions-list-item">Click "Start New Search".</li>
+                        <li className="instructions-list-item">Find the words before the algorithm does.</li>
+                    </ol>
+                    <h5>Rules:</h5>
+                    <ul>
+                        <li className="instructions-list-item">Words can move across the grid horizontally or vertically - not diagonally.</li>
+                        <li className="instructions-list-item">The direction of a word can change mid-word.</li>
+                        <li className="instructions-list-item">The same grid cell can only be used once per word.</li>
+                    </ul>
+                    <ModalInformational
+                        buttonText="More Information"
+                        modalTitle="More Information"
+                        modalContents={
+                            <div>
+                            <p>
+                                The algorithm is based
+                                on the <a href="https://leetcode.com/problems/word-search-ii/" target="_blank">WordSearch II</a> algorithm
+                                from <a href="https://leetcode.com/" target="_blank">LeetCode.com</a>. LeetCode have very good, detailed
+                                break-down of how the algorithm works.
+                            </p>
+                            <p>
+                                I've made a few changes to the LeetCode version.
+                                Firstly, I've added the animations.
+                                Secondly, I've made it stop searching through the grid when the trie is empty.
+                                Thirdly, I've made it stop iterating through neighbouring cells if there are no more words that can be found
+                                from the current position.
+                                The last two modifications don't change the big-O time complexity of the algorithm, but they do make the
+                                animation look better, because it doesn't keep looking for words when there aren't any to find.
+                            </p>
+                            <p>
+                                The clever thing about the algorithm is the use of a trie, or prefix tree, data structure.
+                                This prevents the time complexity of the algorithm increasing with the number of words to be searched.
+                            </p>
                             </div>
-                            <div className="modal-body">
-                                <p>
-                                    The algorithm is based
-                                    on the <a href="https://leetcode.com/problems/word-search-ii/" target="_blank">WordSearch II</a> algorithm
-                                    from <a href="https://leetcode.com/" target="_blank">LeetCode.com</a>. LeetCode have very good, detailed
-                                    break-down of how the algorithm works.
-                                </p>
-                                <p>
-                                    I've made a few changes to the LeetCode version.
-                                    Firstly, I've added the animations.
-                                    Secondly, I've made it stop searching through the grid when the trie is empty.
-                                    Thirdly, I've made it stop iterating through neighbouring cells if there are no more words that can be found
-                                    from the current position.
-                                    The last two modifications don't change the big-O time complexity of the algorithm, but they do make the
-                                    animation look better, because it doesn't keep looking for words when there aren't any to find.
-                                </p>
-                                <p>
-                                    The clever thing about the algorithm is the use of a trie, or prefix tree, data structure.
-                                    This prevents the time complexity of the algorithm increasing with the number of words to be searched.
-                                </p>
-                            </div>
-                            <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {wordsList}
-                <button
-                    className="btn btn-primary add-word-button"
-                    disabled={this.shouldAddWordBeDisabled()}
-                    onClick={() => this.addWord()}
-                >+</button>
-                <label>How Many Rows and Columns?</label>
-                <input
-                    className="form-control row-count-input"
-                    disabled={this.isAnimationRunning()}
-                    maxLength="2"
-                    value={this.state.rowCount}
-                    onKeyDown={(event) => {
-                        //Allow only numbers to be entered into the row/col count input (or backspace or delete).
-                        let key = event.key;
-                        let regex = new RegExp(/[0-9]/);
-                        let acceptableNonDigits = new Set();
-                        acceptableNonDigits.add('Backspace');
-                        acceptableNonDigits.add('Delete');
-                        acceptableNonDigits.add('ArrowLeft');
-                        acceptableNonDigits.add('ArrowRight');
-                        if (!(regex.test(key) === true || acceptableNonDigits.has(key))) {
-                            event.preventDefault();
                         }
-                    }}
-                    onChange={(event) => this.updateRowColumnCount(event)}
-                />
-                <br />
-                <button
-                    className="btn btn-success start-search-button"
-                    onClick={() => this.doWordSearch()}
-                >Start New Search</button>
-                <button
-                    title="Play/Pause"
-                    className="btn btn-primary grid-control-button"
-                    disabled={!this.state.wordsAndGridInSync}
-                    onClick={() => {
-                        this.setState({
-                            animationState: this.state.animationState === 'PLAY' ? 'Pause' : 'PLAY'
-                        });
-                    }}
-                >{this.state.animationState === 'PLAY' ? '⏸️' : '▶️'}</button>
-                <button
-                    title="Skip to the end"
-                    className="btn btn-primary grid-control-button"
-                    disabled={!this.state.wordsAndGridInSync}
-                    onClick={() => {
-                        this.setState({
-                            animationState: this.animationState === 'STOP' ? 'STOP' : 'SKIP'
-                        });
-                    }}
-                >⏭️</button>
-                <button
-                    title="Replay"
-                    className="btn btn-primary grid-control-button"
-                    disabled={!this.state.wordsAndGridInSync}
-                    onClick={this.replayAnimation}
-                >🔄️</button>
-                <br />
-                <label
-                    htmlFor="animationSpeedRange"
-                    className="word-search-speed-label"
-                >Animation Speed:</label>
-                <input
-                    id="animationSpeedRange"
-                    type="range"
-                    min="25"
-                    max="300"
-                    className="custom-range word-search-speed-range"
-                    disabled={!this.state.wordsAndGridInSync}
-                    value={this.state.animationSpeed}
-                    onChange={(event) => this.changeAnimationSpeed(event)}
-                />
-                <table>
-                    <tbody>
-                        {gridRows}
-                    </tbody>
-                </table >
-            </div>
+                    />
+                    <br />
+                    <h5>Words to Go on the Grid:</h5>
+                    {wordsList}
+                    <button
+                        className="btn btn-primary add-word-button"
+                        disabled={this.shouldAddWordBeDisabled()}
+                        onClick={() => this.addWord()}
+                    >+</button>
+                </Col>
+                <Col>
+                    <button
+                        className="btn btn-success start-search-button"
+                        onClick={() => this.doWordSearch()}
+                    >Start New Search</button>
+                    <button
+                        title="Play/Pause"
+                        className="btn btn-primary grid-control-button"
+                        disabled={!this.state.wordsAndGridInSync}
+                        onClick={() => {
+                            this.setState({
+                                animationState: this.state.animationState === 'PLAY' ? 'Pause' : 'PLAY'
+                            });
+                        }}
+                    >{this.state.animationState === 'PLAY' ? '⏸️' : '▶️'}</button>
+                    <button
+                        title="Skip to the end"
+                        className="btn btn-primary grid-control-button"
+                        disabled={!this.state.wordsAndGridInSync}
+                        onClick={() => {
+                            this.setState({
+                                animationState: this.animationState === 'STOP' ? 'STOP' : 'SKIP'
+                            });
+                        }}
+                    >⏭️</button>
+                    <button
+                        title="Replay"
+                        className="btn btn-primary grid-control-button"
+                        disabled={!this.state.wordsAndGridInSync}
+                        onClick={this.replayAnimation}
+                    >🔄️</button>
+                    <br />
+                    <label
+                        htmlFor="animationSpeedRange"
+                        className="word-search-speed-label"
+                    >Animation Speed:</label>
+                    <input
+                        id="animationSpeedRange"
+                        type="range"
+                        min="25"
+                        max="300"
+                        className="custom-range word-search-speed-range"
+                        disabled={!this.state.wordsAndGridInSync}
+                        value={this.state.animationSpeed}
+                        onChange={(event) => this.changeAnimationSpeed(event)}
+                    />
+                    <label>How Many Rows and Columns?</label>
+                    <input
+                        className="form-control row-count-input"
+                        disabled={this.isAnimationRunning()}
+                        maxLength="2"
+                        value={this.state.rowCount}
+                        onKeyDown={(event) => {
+                            //Allow only numbers to be entered into the row/col count input (or backspace or delete).
+                            let key = event.key;
+                            let regex = new RegExp(/[0-9]/);
+                            let acceptableNonDigits = new Set();
+                            acceptableNonDigits.add('Backspace');
+                            acceptableNonDigits.add('Delete');
+                            acceptableNonDigits.add('ArrowLeft');
+                            acceptableNonDigits.add('ArrowRight');
+                            if (!(regex.test(key) === true || acceptableNonDigits.has(key))) {
+                                event.preventDefault();
+                            }
+                        }}
+                        onChange={(event) => this.updateRowColumnCount(event)}
+                    />
+                    <br />
+                    <table>
+                        <tbody>
+                            {gridRows}
+                        </tbody>
+                    </table >
+                </Col>
+            </Row>
         );
     }
 }

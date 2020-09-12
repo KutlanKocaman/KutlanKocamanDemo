@@ -1,5 +1,5 @@
 ﻿import React, { Component } from 'react';
-import { NavLink, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import { Link } from 'react-router-dom';
 
 export class NavMenu extends Component {
