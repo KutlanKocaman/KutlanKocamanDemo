@@ -30,19 +30,19 @@
                             Content for all users
                         </a>
                         <div class="dropdown-menu" aria-labelledby="contentForAllUsersButton">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Algorithms" asp-action="Index">Algorithms</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="SPA" asp-action="Index">Algorithms</a>
                         </div>
                     </div>
                     @if (User.Identity.IsAuthenticated)
                     {
-                    <div class="btn-group">
-                        <a href="#" type="button" class="nav-link text-dark" id="contentForAuthUsersButton" data-toggle="dropdown">
-                            Content for authenticated users
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="contentForAuthUsersButton">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Customers" asp-action="Index">Customers (SQL DB CRUD)</a>
+                        <div class="btn-group">
+                            <a href="#" type="button" class="nav-link text-dark" id="contentForAuthUsersButton" data-toggle="dropdown">
+                                Content for authenticated users
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="contentForAuthUsersButton">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Customers" asp-action="Index">Customers (SQL DB CRUD)</a>
+                            </div>
                         </div>
-                    </div>
                     }
                     <partial name="_LoginPartial" />
                 </div>
@@ -55,14 +55,9 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            KutlanKocamanDemo
-        </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @RenderSection("Scripts", required: false)
-</body>
+        <script src="~/lib/jquery/dist/jquery.min.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="~/js/site.js" asp-append-version="true"></script>
+        @RenderSection("Scripts", required: false)
+    </body>
 </html>

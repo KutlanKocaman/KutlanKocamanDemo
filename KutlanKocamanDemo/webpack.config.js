@@ -3,11 +3,11 @@
 module.exports = {
     mode: 'production', //development or production
     entry: { //Entry point for the webpack to start bundling.
-        algorithms: './wwwroot/js/algorithms/algorithms.jsx'
+        spa: './wwwroot/js/spa.js'
     },
     output: {
-        path: path.resolve(__dirname, './wwwroot/js/bundled'),
-        filename: 'algorithms-bundle.js'
+        path: path.resolve(__dirname, './wwwroot/js/dist'),
+        filename: '[name].bundle.js'
     },
     module: {
         rules: [

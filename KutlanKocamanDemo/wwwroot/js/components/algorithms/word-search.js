@@ -1,6 +1,6 @@
 ﻿import React from "react";
-import TrieNode from "../shared/trie-node";
-import { createMultiDimensionalArray, createDeepCopy, randomBetweenInclusive } from "../shared/functions";
+import TrieNode from "../../shared/trie-node";
+import { createMultiDimensionalArray, createDeepCopy, randomBetweenInclusive } from "../../shared/functions";
 
 class WordSearch extends React.Component {
     constructor(props) {
@@ -52,6 +52,11 @@ class WordSearch extends React.Component {
             animationCancellationToken: null,
             animationSpeed: 100
         }
+    }
+
+    componentWillUnmount() {
+        //Cancel any running animation when the word search is unmounted.
+        clearTimeout(this.animationCancellationToken);
     }
 
     /***********************************************************

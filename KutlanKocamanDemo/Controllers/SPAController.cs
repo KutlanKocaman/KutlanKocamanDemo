@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace KutlanKocamanDemo.Controllers
 {
     [AllowAnonymous]
-    public class AlgorithmsController : Controller
+    public class SPAController : Controller
     {
         public IActionResult Index()
         {

@@ -15,5 +15,9 @@
   },
   "scripts": {
     "build": "webpack"
+  },
+  "dependencies": {
+    "react-router-dom": "^5.2.0",
+    "reactstrap": "^8.5.1"
   }
 }

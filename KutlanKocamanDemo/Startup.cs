@@ -107,6 +107,11 @@ namespace KutlanKocamanDemo
 
             app.UseEndpoints(endpoints =>
             {
+                //SPA route.
+                endpoints.MapControllerRoute(name: "spa",
+                    pattern: "spa/{*everything}", //Everything to /SPA goes to /SPA/Index for the SPA to manage.
+                    defaults: new { controller = "SPA", action = "Index" });
+                //Other routes.
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
