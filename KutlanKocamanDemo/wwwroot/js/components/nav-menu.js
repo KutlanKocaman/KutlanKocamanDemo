@@ -29,8 +29,8 @@ export class NavMenu extends Component {
                     <DropdownItem tag={Link} to="/WordSearch">
                         Word Search Animation
                     </DropdownItem>
-                    <DropdownItem>
-                        More to come...
+                    <DropdownItem tag={Link} to="/TopologicalSort">
+                        Topological Sort Animation
                     </DropdownItem>
                 </DropdownMenu>
             </Dropdown>

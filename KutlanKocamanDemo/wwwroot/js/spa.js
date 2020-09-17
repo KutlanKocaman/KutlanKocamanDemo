@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { Route } from 'react-router';
 import { Layout } from './components/layout';
 import WordSearch from './components/algorithms/word-search.js';
+import { TopologicalSort } from './components/algorithms/topological-sort';
 
 export default class App extends Component {
     static displayName = App.name;
@@ -13,6 +14,7 @@ export default class App extends Component {
             <Layout>
                 <Route exact path='/' component={WordSearch} />
                 <Route path='/WordSearch' component={WordSearch} />
+                <Route path='/TopologicalSort' component={TopologicalSort} />
             </Layout>
         );
     }
