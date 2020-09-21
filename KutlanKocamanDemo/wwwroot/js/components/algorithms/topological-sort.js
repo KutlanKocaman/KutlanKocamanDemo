@@ -1,5 +1,5 @@
 ﻿import React from "react";
-import { Row, Col } from "reactstrap";
+import { Row, Col, Button } from "reactstrap";
 import { DocumentTitle } from '../document-title';
 import { createDeepCopy } from "../../shared/functions";
 
@@ -10,52 +10,109 @@ export class TopologicalSort extends React.Component {
         //Set up the example graph.
         this.state = {
             nodes: {
-                1: {
+                0: {
                     x: 50,
+                    y: 50
+                },
+                1: {
+                    x: 150,
                     y: 50
                 },
                 2: {
-                    x: 150,
+                    x: 250,
                     y: 50
                 },
                 3: {
-                    x: 250,
-                    y: 50
-                },
-                4: {
                     x: 50,
                     y: 150
                 },
-                5: {
+                4: {
                     x: 150,
                     y: 150
                 },
-                6: {
+                5: {
                     x: 250,
                     y: 150
                 },
-                7: {
+                6: {
                     x: 50,
                     y: 250
                 },
-                8: {
+                7: {
                     x: 150,
                     y: 250
                 }
             },
             edges: {
-                '1,2': {},
+                '0,1': {},
+                '0,3': {},
                 '1,4': {},
-                '2,5': {},
-                '2,6': {},
+                '1,5': {},
+                '4,3': {},
+                '4,6': {},
                 '5,4': {},
                 '5,7': {},
-                '6,5': {},
-                '6,8': {},
-                '7,4': {},
-                '7,8': {}
+                '6,3': {},
+                '6,7': {}
             }
         }
+    }
+
+    topologicalSort = () => {
+        let nodes = createDeepCopy(this.state.nodes);
+        let edges = createDeepCopy(this.state.edges);
+        let adjacencyList = {};
+        let indegrees = Array(Object.keys(nodes).length).fill(0);
+
+        //Iterate through the edges and build the adjacency list and indegree counts.
+        for (let i = 0; i < Object.keys(edges).length; i++) {
+            let edgeNodes = Object.keys(edges)[i].split(',');
+
+            //Increment indegree count for second node in the edge.
+            indegrees[edgeNodes[1]]++;
+
+            if (!adjacencyList.hasOwnProperty(edgeNodes[0])) {
+                adjacencyList[edgeNodes[0]] = new Set();
+            }
+            adjacencyList[edgeNodes[0]].add(edgeNodes[1]);
+        }
+
+        //Set of nodes with no incoming edge.
+        let indegreeZeroNodes = new Set();
+        for (let i = 0; i < indegrees.length; i++) {
+            if (indegrees[i] === 0) {
+                indegreeZeroNodes.add(i);
+            }
+        }
+
+        //Build an output list by taking nodes with no more dependencies from the set.
+        let output = [];
+        let zeroIndegreeIterator = indegreeZeroNodes.values();
+        while (indegreeZeroNodes.size > 0) { //Consider Object.keys(indegreeZeroNodes).length if this is buggy
+            //Get the next node with no incoming edges from the set.
+            let removedNode = zeroIndegreeIterator.next().value;
+            indegreeZeroNodes.delete(removedNode);
+
+            //Add the node to the output.
+            output.push(removedNode);
+
+            //If there are no edges originating from this node, continue on to the next node with no incoming edges.
+            if (adjacencyList[removedNode] === undefined) {
+                continue;
+            }
+
+            //Remove all edges which go from the removed node to another node.
+            adjacencyList[removedNode].forEach((value) => {
+                //Decrement the indegree for this node, which had an incoming edge from the removed node.
+                indegrees[value]--;
+
+                //If the indegree count is now 0 for this node, add it to the set of nodes with 0 indegree.
+                if (indegrees[value] === 0) {
+                    indegreeZeroNodes.add(parseInt(value));
+                }
+            });
+        }
+        console.log(output);
     }
 
     updateCoords = (updateProps) => {
@@ -85,16 +142,14 @@ export class TopologicalSort extends React.Component {
     createEdges = () => {
         let edgeElements = Object.entries(this.state.edges).map(([key, value]) => {
             let edgeNodes = key.split(',');
-            let node1 = edgeNodes[0];
-            let node2 = edgeNodes[1];
 
             return (
                 <GraphEdge
                     key={key}
-                    x1={this.state.nodes[node1].x}
-                    y1={this.state.nodes[node1].y}
-                    x2={this.state.nodes[node2].x}
-                    y2={this.state.nodes[node2].y}
+                    x1={this.state.nodes[edgeNodes[0]].x}
+                    y1={this.state.nodes[edgeNodes[0]].y}
+                    x2={this.state.nodes[edgeNodes[1]].x}
+                    y2={this.state.nodes[edgeNodes[1]].y}
                 />
             );
         });
@@ -105,8 +160,14 @@ export class TopologicalSort extends React.Component {
     render() {
         return (
             <Row>
-                <DocumentTitle documentTitle="Topological Sort" />
+                <DocumentTitle documentTitle='Topological Sort' />
                 <Col>
+                    <Button
+                        color='primary'
+                        onClick={() => this.topologicalSort()}
+                    >
+                        Sort!
+                    </Button>
                     <GraphArea>
                         {this.createNodes()}
                         {this.createEdges()}
