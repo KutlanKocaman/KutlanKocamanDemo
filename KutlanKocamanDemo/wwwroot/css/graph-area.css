@@ -1,38 +1,7 @@
 ﻿.graph-area {
+    position: relative;
     height: 30em;
     width: 100%;
     border: 1px black solid;
-}
-
-.graph-node {
-    position: absolute;
-    height: 40px;
-    width: 40px;
-    border-radius: 2em;
-    line-height: 35px;
-    text-align: center;
-    touch-action: none; /* Disable touch scrolling for mobile, as touch must move the node. */
-    border: solid black 1px;
-}
-
-@media only screen and (min-width: 768px) {
-    .graph-node:hover {
-        cursor: grab;
-        background-color: yellow;
-    }
-}
-
-.graph-edge {
-    background-color: black;
-    position: absolute;
-    height: 2px;
-}
-
-.graph-edge-pointer {
-    width: 0;
-    height: 0;
-    border-top: 8px solid transparent;
-    border-right: 8px solid black;
-    border-bottom: 8px solid transparent;
-    transform: translate(0px, -7px);
+    border-radius: 1em;
 }

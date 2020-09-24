@@ -5,6 +5,8 @@ import TrieNode from "../../shared/trie-node";
 import { createMultiDimensionalArray, createDeepCopy, randomBetweenInclusive } from "../../shared/functions";
 import { ModalInformational } from "../modal-info";
 
+import '../../../css/word-search.css'
+
 class WordSearch extends React.Component {
     constructor(props) {
         super(props)

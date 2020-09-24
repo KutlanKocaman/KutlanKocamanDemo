@@ -1,0 +1,27 @@
+﻿
+.graph-node {
+    position: absolute;
+    height: 40px;
+    width: 40px;
+    border-radius: 2em;
+    line-height: 35px;
+    text-align: center;
+    touch-action: none; /* Disable touch scrolling for mobile, as touch must move the node. */
+    border: solid black 1px;
+    background-color: var(--primary-colour);
+    color: white;
+}
+
+.graph-node-faded {
+    opacity: 0.25;
+    background-color: inherit;
+    color: inherit;
+}
+
+@media only screen and (min-width: 768px) {
+    .graph-node:hover {
+        cursor: grab;
+        background-color: var(--primary-hover-colour);
+        color: white;
+    }
+}

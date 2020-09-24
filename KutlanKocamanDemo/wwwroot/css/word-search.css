@@ -3,10 +3,6 @@
     --word-search-show-colour: #fcfb00;
 }
 
-.hidden {
-    visibility: hidden;
-}
-
 .instructions-list-item {
     margin-left: -1.2em;
 }
@@ -54,30 +50,6 @@ input.word-search-show:read-only {
     margin-bottom: 0.5em;
     width: 2.8em;
     display: inline;
-}
-
-.start-search-button {
-    margin-bottom: 0.2em;
-    margin-right: 0.2em;
-}
-
-.grid-control-button {
-    margin-top: 1px;
-    margin-bottom: 0.2em;
-    margin-right: 0.2em;
-    padding: 0em;
-    padding-bottom: 2px;
-    font-size: 25px;
-}
-
-.word-search-speed-label {
-    padding-top: 0.3em;
-}
-
-.word-search-speed-range {
-    margin-left: 0.5em;
-    padding-top: 0.5em;
-    width: 12em;
 }
 
 .grid-cell {

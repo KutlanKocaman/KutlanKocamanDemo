@@ -1,0 +1,33 @@
+﻿
+.animation-control {
+    background-color: aliceblue;
+    border-radius: 1em;
+    padding: 0.8em;
+    border: 1px solid;
+    border-color: var(--primary-colour);
+    width: fit-content;
+}
+
+.animation-control-button {
+    margin-top: -3px;
+    margin-right: 0.2em;
+    padding: 0em;
+    padding-bottom: 2px;
+    font-size: 23px;
+}
+
+.animation-control-start {
+    margin-bottom: 0.2em;
+    margin-right: 0.2em;
+}
+
+.animation-control-speed-label {
+    padding-top: 0.3em;
+}
+
+.animation-control-speed-range {
+    margin-left: 0.5em;
+    padding-top: 0.5em;
+    width: 10em;
+    display: inline;
+}
