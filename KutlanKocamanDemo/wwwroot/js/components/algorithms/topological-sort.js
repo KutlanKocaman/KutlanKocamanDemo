@@ -6,12 +6,14 @@ import { GraphNode } from '../graph-node';
 import { GraphEdge } from '../graph-edge';
 import { createDeepCopy } from "../../shared/functions";
 import { AnimationControl } from '../animation-control';
+import { GraphEditer } from '../graph-editer';
 
 export class TopologicalSort extends React.Component {
     constructor(props) {
         super(props);
 
         this.animationArray = [];
+        this.maxNodes = 100;
 
         //Set up the example graph.
         this.state = {
@@ -62,6 +64,8 @@ export class TopologicalSort extends React.Component {
                 '6,7': {},
                 '7,4': {}
             },
+            isEdgeBeingCreated: false,
+            newEdgeNodes: [],
             animationArray: [],
             animationIndex: 0
         }
@@ -160,7 +164,7 @@ Method to pass to nodes to allow them to update their coordinates.
 Create the nodes.
 ***********************************************************/
 
-    createNodes = () => {
+    renderNodes = () => {
         let nodeElements = Object.entries(this.state.nodes).map(([key, value]) =>
             <GraphNode
                 key={key}
@@ -169,6 +173,8 @@ Create the nodes.
                 yCoord={value.y}
                 updateCoords={this.updateCoords}
                 className={this.setNodeClass(value)}
+                isEdgeBeingCreated={this.state.isEdgeBeingCreated}
+                addNodeToNewEdge={this.addNodeToNewEdge}
             />
         );
 
@@ -179,7 +185,7 @@ Create the nodes.
 Create edges using the coordinates of the nodes being connected.
 ***********************************************************/
 
-    createEdges = () => {
+    renderEdges = () => {
         let edgeElements = Object.entries(this.state.edges).map(([key, value]) => {
             let edgeNodes = key.split(',');
 
@@ -199,13 +205,116 @@ Create edges using the coordinates of the nodes being connected.
     }
 
 /***********************************************************
+Process to allow the user to create a new node.
+***********************************************************/
+
+    createNode = () => {
+        const newNodes = createDeepCopy(this.state.nodes);
+
+        //Find the lowest available node id.
+        let newNodeId = 0;
+        while (newNodeId < this.maxNodes) {
+            if (!newNodes.hasOwnProperty(newNodeId)) {
+                break;
+            }
+            newNodeId++;
+        }
+
+        //Create the new node.
+        newNodes[newNodeId] = {
+            x: 0,
+            y: 0
+        }
+
+        this.setState({
+            nodes: newNodes
+        });
+    }
+
+/***********************************************************
+Process to allow the user to create a new edge.
+***********************************************************/
+
+    createEdge = () => {
+        //Empty the newEdgeNodes array.
+        this.newEdgeNodes = [];
+
+        //If the user has clicked the "Add a connector" button again before creating an edge, un-select all nodes.
+        if (this.state.isEdgeBeingCreated) {
+            const newNodes = createDeepCopy(this.state.nodes);
+            let nodeKeys = Object.keys(newNodes);
+            for (let i = 0; i < nodeKeys.length; i++) {
+                if (newNodes[nodeKeys[i]].state === 'SELECTED') {
+                    newNodes[nodeKeys[i]].state = '';
+                }
+            }
+            this.setState({
+                nodes: newNodes
+            });
+        }
+
+        this.setState((state) => {
+            return { isEdgeBeingCreated: !state.isEdgeBeingCreated }
+        });
+    }
+
+/***********************************************************
+Add a node to the new edge being created.
+***********************************************************/
+
+    addNodeToNewEdge = (nodeValue) => {
+        //Add the node to the new edge.
+        if (this.newEdgeNodes.length < 2) {
+            this.newEdgeNodes.push(nodeValue);
+        }
+
+        //Highlight the selected node to let the user know it has been registered.
+        const newNodes = createDeepCopy(this.state.nodes);
+        newNodes[nodeValue].state = 'SELECTED';
+        this.setState({
+            nodes: newNodes
+        });
+
+        //If the new edge now has 2 nodes, then create the edge.
+        if (this.newEdgeNodes.length === 2) {
+            const newEdges = createDeepCopy(this.state.edges);
+
+            //Create a new edge using the two selected nodes.
+            const newEdgeKey = this.newEdgeNodes[0] + ',' + this.newEdgeNodes[1];
+            if (!newEdges.hasOwnProperty(newEdgeKey)) {
+                newEdges[newEdgeKey] = {};
+            }
+
+            //Un-select all nodes.
+            let nodeKeys = Object.keys(newNodes);
+            for (let i = 0; i < nodeKeys.length; i++) {
+                if (newNodes[nodeKeys[i]].state === 'SELECTED') {
+                    newNodes[nodeKeys[i]].state = '';
+                }
+            }
+            
+            this.setState({
+                nodes: newNodes,
+                edges: newEdges,
+                isEdgeBeingCreated: false
+            });
+        }
+    }
+
+/***********************************************************
 Set node class.
 ***********************************************************/
 
     setNodeClass = (node) => {
-        if (node.hasOwnProperty('state') && node.state === 'FADED') {
-            return 'graph-node-faded';
+        if (node.hasOwnProperty('state')) {
+            if (node.state === 'FADED') {
+                return 'graph-node-faded';
+            }
+            else if (node.state === 'SELECTED') {
+                return 'graph-node-selected';
+            }
         }
+
         return '';
     }
 
@@ -402,9 +511,15 @@ React Render Method
                         replayAnimation={this.replayAnimation}
                     />
                     <br />
+                    <GraphEditer
+                        isEdgeBeingCreated={this.state.isEdgeBeingCreated}
+                        createNode={this.createNode}
+                        createEdge={this.createEdge}
+                    />
+                    <br />
                     <GraphArea>
-                        {this.createNodes()}
-                        {this.createEdges()}
+                        {this.renderNodes()}
+                        {this.renderEdges()}
                     </GraphArea>
                 </Col>
             </Row>

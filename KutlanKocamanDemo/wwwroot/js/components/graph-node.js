@@ -24,6 +24,12 @@ export class GraphNode extends React.Component {
         let clientX = isClickEvent ? event.clientX : event.touches[0].clientX;
         let clientY = isClickEvent ? event.clientY : event.touches[0].clientY;
 
+        //If an edge is being created, use mousedown events to select nodes for a new edge.
+        if (this.props.isEdgeBeingCreated) {
+            this.props.addNodeToNewEdge(event.target.innerText);
+            return;
+        }
+
         //Save the original position so that we can calculate the new position based on it.
         this.xDiff = this.props.xCoord - clientX;
         this.yDiff = this.props.yCoord - clientY;
@@ -117,8 +123,8 @@ export class GraphNode extends React.Component {
             <div
                 className={this.setClass()}
                 style={this.setStyle()}
-                onMouseDown={(event) => this.dragStart(event)}
-                onTouchStart={(event) => this.dragStart(event)}
+                onMouseDown={() => this.dragStart(event)}
+                onTouchStart={() => this.dragStart(event)}
             >
                 {this.props.nodeId}
             </div>
