@@ -8,6 +8,7 @@ export class GraphNode extends React.Component {
 
         this.xDiff = 0;
         this.yDiff = 0;
+        this.nodeRadius = 40;
 
         this.state = {
             dragging: false
@@ -53,18 +54,16 @@ export class GraphNode extends React.Component {
         let newYCoord = clientY + this.yDiff;
 
         //Prevent the node from moving outside of the graph area.
-        const leftPad = 15;
-        const rightPad = 20;
-        const topPad = 20;
-        const bottomPad = 15;
-        if (newXCoord < leftPad) {
-            newXCoord = leftPad;
+        const rightPad = this.nodeRadius;
+        const bottomPad = this.nodeRadius;
+        if (newXCoord < 0) {
+            newXCoord = 0;
         }
         else if (newXCoord > this.props.getAreaWidth() - rightPad) {
             newXCoord = this.props.getAreaWidth() - rightPad;
         }
-        if (newYCoord < topPad) {
-            newYCoord = topPad;
+        if (newYCoord < 0) {
+            newYCoord = 0;
         }
         else if (newYCoord > this.props.getAreaHeight() - bottomPad) {
             newYCoord = this.props.getAreaHeight() - bottomPad;
@@ -97,7 +96,7 @@ export class GraphNode extends React.Component {
         }
         if (this.state.dragging) {
             elementStyle.cursor = 'grabbing'
-            elementStyle.zIndex = '100';
+            elementStyle.zIndex = '100'; //Make the node appear in front of everything else.
             elementStyle.backgroundColor = 'yellow';
             elementStyle.color = 'black';
         }
