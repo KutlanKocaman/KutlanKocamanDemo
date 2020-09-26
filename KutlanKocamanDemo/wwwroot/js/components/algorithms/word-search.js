@@ -4,6 +4,7 @@ import { DocumentTitle } from '../document-title';
 import TrieNode from "../../shared/trie-node";
 import { createMultiDimensionalArray, createDeepCopy, randomBetweenInclusive } from "../../shared/functions";
 import { ModalInformational } from "../modal-info";
+import { AnimationControl } from '../animation-control';
 
 import '../../../css/word-search.css'
 
@@ -23,6 +24,7 @@ class WordSearch extends React.Component {
         }
 
         this.maxWords = 20;
+        this.animationArray = [];
 
         this.state = {
             characters: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
@@ -52,7 +54,7 @@ class WordSearch extends React.Component {
             columnCount: cols,
             maxRows: 20,
             grid: grid,
-            animationQueue: [],
+            animationArray: [],
             animationIndex: 0,
             animationState: 'PLAY',
             animationCancellationToken: null,
@@ -60,14 +62,9 @@ class WordSearch extends React.Component {
         }
     }
 
-    componentWillUnmount() {
-        //Cancel any running animation when the word search is unmounted.
-        clearTimeout(this.animationCancellationToken);
-    }
-
-    /***********************************************************
-    Word Methods
-    ***********************************************************/
+/***********************************************************
+Add a search word.
+***********************************************************/
 
     addWord = (text = '') => {
         let newWords = createDeepCopy(this.state.words);
@@ -84,6 +81,10 @@ class WordSearch extends React.Component {
         });
     }
 
+/***********************************************************
+Delete a search word.
+***********************************************************/
+
     deleteWord = (wordIndex) => {
         let newWords = createDeepCopy(this.state.words);
 
@@ -94,6 +95,10 @@ class WordSearch extends React.Component {
             wordsAndGridInSync: false
         });
     }
+
+/***********************************************************
+Update a search word.
+***********************************************************/
 
     updateWord = (event, index) => {
         let newWords = createDeepCopy(this.state.words);
@@ -106,6 +111,10 @@ class WordSearch extends React.Component {
             wordsAndGridInSync: false
         });
     }
+
+/***********************************************************
+Highlight a search word and show it on the grid.
+***********************************************************/
 
     showMeWord = (word) => {
         let grid = createDeepCopy(this.state.grid);
@@ -172,12 +181,11 @@ class WordSearch extends React.Component {
         });
     }
 
-    /***********************************************************
-    Grid Population Methods
-    ***********************************************************/
+/***********************************************************
+Populate the grid.
+***********************************************************/
 
-    populateGrid = () => {
-        let words = this.state.words;
+    populateGrid = (words) => {
         let grid = createDeepCopy(this.state.grid);
 
         //Empty the grid.
@@ -211,12 +219,12 @@ class WordSearch extends React.Component {
                 let originalCellValue = grid[row][col].letter;
 
                 //Place this letter on the grid.
-                usedCells.add(this.getCellIndex(row, col));
+                usedCells.add(this.getCellIdentifier(row, col));
                 grid[row][col].letter = words[w].word.charAt(0);
 
                 //Attempt to place the rest of the word on the grid.
                 wordPlaced = this.placeNextLetter(grid, words[w].word, 1, row, col, usedCells);
-                usedCells.delete(this.getCellIndex(row, col));
+                usedCells.delete(this.getCellIdentifier(row, col));
                 //If we have succceeded then stop trying to place this word.
                 if (wordPlaced === true) {
                     break;
@@ -236,6 +244,10 @@ class WordSearch extends React.Component {
         }
         return grid;
     }
+
+/***********************************************************
+Attempt to place the next letter on the grid.
+***********************************************************/
 
     placeNextLetter = (grid, word, curCharIndex, curRow, curCol, usedCells) => {
         //We have placed the entire word already so return true.
@@ -263,18 +275,18 @@ class WordSearch extends React.Component {
             //Check if the random neighbour is valid and not used already.
             if (newRow >= 0 && newRow < grid.length
                 && newCol >= 0 && newCol < grid[0].length
-                && !usedCells.has(this.getCellIndex(newRow, newCol))) {
+                && !usedCells.has(this.getCellIdentifier(newRow, newCol))) {
                 let originalCellValue = grid[newRow][newCol].letter;
                 //The neighbouring cell has to be empty or contain the letter we want to place.
                 if (grid[newRow][newCol].letter === null || grid[newRow][newCol].letter === word.charAt(curCharIndex)) {
-                    usedCells.add(this.getCellIndex(newRow, newCol));
+                    usedCells.add(this.getCellIdentifier(newRow, newCol));
                     grid[newRow][newCol].letter = word.charAt(curCharIndex);
                     //If placing entire word was successful then return true.
                     if (this.placeNextLetter(grid, word, curCharIndex + 1, newRow, newCol, usedCells) === true) {
                         return true;
                     }
                     //Else backtrack and try another neighbour.
-                    usedCells.delete(this.getCellIndex(newRow, newCol));
+                    usedCells.delete(this.getCellIdentifier(newRow, newCol));
                     grid[newRow][newCol].letter = originalCellValue;
                 }
             }
@@ -283,13 +295,11 @@ class WordSearch extends React.Component {
         return false;
     }
 
-    /***********************************************************
-    Word Search Algorithm
-    ***********************************************************/
+/***********************************************************
+Find the words on the grid.
+***********************************************************/
 
-    wordSearch = () => {
-        let grid = createDeepCopy(this.state.grid);
-        let words = createDeepCopy(this.state.words);
+    wordSearch = (words, grid) => {
         let output = {
             grid: grid,
             words: words
@@ -320,16 +330,21 @@ class WordSearch extends React.Component {
         //Iterate through the grid.
         for (let i = 0; i < grid.length; i++) {
             for (let j = 0; j < grid[0].length; j++) {
-                let originalCellState = grid[i][j].state;
+                const originalCellState = grid[i][j].state;
 
                 let result = false;
                 //If the root contains the letter as a child.
                 if (grid[i][j].letter in trieRoot.Children) {
-                    let cellIndex = this.getCellIndex(i, j);
+                    let cellIndex = this.getCellIdentifier(i, j);
                     usedCells.add(cellIndex);
 
                     //Queue the animation to show we matched a letter.
-                    this.queueGridAnimation(i, j, 'PARTFOUND');
+                    this.animationArray.push({
+                        type: 'grid',
+                        row: i,
+                        column: j,
+                        state: 'PARTFOUND'
+                    });
 
                     //Try to find the rest of the word.
                     result = this.wordSearchCellRecurse(grid, words, usedCells, outputHash, trieRoot.Children[grid[i][j].letter], i, j);
@@ -337,15 +352,26 @@ class WordSearch extends React.Component {
                     usedCells.delete(cellIndex);
                 }
                 else {
-
                     //Queue the animation to show we didn't match a letter.
-                    this.queueGridAnimation(i, j, 'MISMATCH');
+                    this.animationArray.push({
+                        type: 'grid',
+                        row: i,
+                        column: j,
+                        state: 'MISMATCH'
+                    });
                 }
 
                 //We found a word.
                 if (result === true) {
                     grid[i][j].state = 'FOUND';
-                    this.queueGridAnimation(i, j, 'FOUND');
+
+                    //Queue the animation.
+                    this.animationArray.push({
+                        type: 'grid',
+                        row: i,
+                        column: j,
+                        state: 'FOUND'
+                    });
 
                     //We found a word and the node has no children, so delete the node.
                     if (Object.keys(trieRoot.Children[grid[i][j].letter].Children).length === 0) {
@@ -359,12 +385,23 @@ class WordSearch extends React.Component {
                 //We didn't find a word.
                 else {
                     grid[i][j].state = originalCellState;
-                    this.queueGridAnimation(i, j, originalCellState);
+
+                    //Queue the animation.
+                    this.animationArray.push({
+                        type: 'grid',
+                        row: i,
+                        column: j,
+                        state: originalCellState
+                    });
                 }
             }
         }
         return output;
     }
+
+/***********************************************************
+Recursion method to find the next letter in a word.
+***********************************************************/
 
     wordSearchCellRecurse = (grid, words, usedCells, outputHash, curNode, row, col) => {
         let foundWord = false;
@@ -381,8 +418,16 @@ class WordSearch extends React.Component {
                         words[i].cells = createDeepCopy(usedCells);
 
                         //Queue the animation to visually show the word as FOUND.
-                        this.queueWordAnimation(curNode.Word, 'SHOW', 6);
-                        this.queueWordAnimation(curNode.Word, 'FOUND', 0);
+                        this.animationArray.push({
+                            type: 'words',
+                            word: curNode.Word,
+                            state: 'SHOW'
+                        });
+                        this.animationArray.push({
+                            type: 'words',
+                            word: curNode.Word,
+                            state: 'FOUND'
+                        });
                     }
                 }
             }
@@ -400,7 +445,7 @@ class WordSearch extends React.Component {
         for (let i = 0; i < neighbouringCells.length; i++) {
             let newRow = row + neighbouringCells[i][0];
             let newCol = col + neighbouringCells[i][1];
-            let cellIndex = this.getCellIndex(newRow, newCol);
+            let cellIndex = this.getCellIdentifier(newRow, newCol);
 
             //If the curNode has no children, stop iterating through neighbouring cells.
             if (curNode.Children.size === 0
@@ -415,7 +460,7 @@ class WordSearch extends React.Component {
                 && !usedCells.has(cellIndex)) {
 
                 //Queue the animation to show that this cell is being examined.
-                let originalCellState = grid[newRow][newCol].state;
+                const originalCellState = grid[newRow][newCol].state;
 
                 //If this cell's letter is one of the TrieNode's children.
                 if ((grid[newRow][newCol].letter in curNode.Children)) {
@@ -423,7 +468,12 @@ class WordSearch extends React.Component {
                     usedCells.add(cellIndex);
 
                     //Queue the animation to show that we have matched a letter in this cell.
-                    this.queueGridAnimation(newRow, newCol, 'PARTFOUND', 6);
+                    this.animationArray.push({
+                        type: 'grid',
+                        row: newRow,
+                        column: newCol,
+                        state: 'PARTFOUND'
+                    });
 
                     //See if we can find a word using this neighbour
                     let result = this.wordSearchCellRecurse(grid, words, usedCells, outputHash, curNode.Children[grid[newRow][newCol].letter], newRow, newCol);
@@ -438,7 +488,12 @@ class WordSearch extends React.Component {
                         foundWord = true;
 
                         //Queue the animation.
-                        this.queueGridAnimation(newRow, newCol, 'FOUND', 6);
+                        this.animationArray.push({
+                            type: 'grid',
+                            row: newRow,
+                            column: newCol,
+                            state: 'FOUND'
+                        });
 
                         //We found a word and the trie node for that word has no children, so delete the node.
                         if (Object.keys(curNode.Children[grid[newRow][newCol].letter].Children).length === 0) {
@@ -448,17 +503,35 @@ class WordSearch extends React.Component {
                     //We didn't find a word further up the stack.
                     else {
                         grid[newRow][newCol].state = originalCellState;
-                        this.queueGridAnimation(newRow, newCol, originalCellState, 6);
+
+                        //Queue the animation to return the call back to its original state.
+                        this.animationArray.push({
+                            type: 'grid',
+                            row: newRow,
+                            column: newCol,
+                            state: originalCellState
+                        });
                     }
 
                 }
                 //The cell's letter does not match any of the TrieNode's children.
                 else {
                     grid[newRow][newCol].state = originalCellState;
+
                     //Show the mismsatch...
-                    this.queueGridAnimation(newRow, newCol, 'MISMATCH', 6);
+                    this.animationArray.push({
+                        type: 'grid',
+                        row: newRow,
+                        column: newCol,
+                        state: 'MISMATCH'
+                    });
                     //Then return the cell to its original state.
-                    this.queueGridAnimation(newRow, newCol, originalCellState, 6);
+                    this.animationArray.push({
+                        type: 'grid',
+                        row: newRow,
+                        column: newCol,
+                        state: originalCellState
+                    });
                 }
             }
         }
@@ -472,145 +545,155 @@ class WordSearch extends React.Component {
         return foundWord;
     }
 
-    getCellIndex = (row, col) => {
+/***********************************************************
+Get the unique identifier of a cell.
+***********************************************************/
+
+    getCellIdentifier = (row, col) => {
         return row + ',' + col;
     }
 
-    /***********************************************************
-    Animation Methods
-    ***********************************************************/
+/***********************************************************
+Start a new animation.
+***********************************************************/
 
-    queueGridAnimation = (row, col, cellState, animationTime) => {
-        this.state.animationQueue.push({
-            type: 'GRID',
-            row: row,
-            col: col,
-            cellState: cellState,
-            time: animationTime
-        });
-    }
+    startNewAnimation = (callback) => {
+        this.animationArray = [];
 
-    queueWordAnimation = (wordString, wordState, animationTime) => {
-        this.state.animationQueue.push({
-            type: 'WORD',
-            wordString: wordString,
-            wordState: wordState,
-            time: animationTime
-        });
-    }
+        let words = this.resetAndCleanWords();
 
-    doAnimation = () => {
-        let grid = createDeepCopy(this.state.grid);
-        let words = createDeepCopy(this.state.words);
-        let newAnimationState = this.state.animationState;
-        let newAnimationIndex = this.state.animationIndex;
-        let animationTime = 50 / (this.state.animationSpeed * 0.01);
+        let grid = this.populateGrid(words);
 
-        //If the words and grid are out of sync, then stop the animation.
-        if (!this.state.wordsAndGridInSync) {
-            return;
-        }
+        //Find the words - fill this.animationArray. Pass a deep copy of grid, so that we don't change the state.
+        //Only the animation should change the state.
+        this.wordSearch(words, createDeepCopy(grid));
 
-        if (this.state.animationState === 'REPLAY') {
-            newAnimationState = 'PLAY';
-            newAnimationIndex = 0;
-
-            //Reset all cell states.
-            for (let i = 0; i < grid.length; i++) {
-                for (let j = 0; j < grid[i].length; j++) {
-                    grid[i][j].state = '';
-                }
-            }
-
-            //Reset all word states.
-            for (let i = 0; i < words.length; i++) {
-                words[i].state = '';
-            }
-        }
-        else if (this.state.animationState === 'PLAY') {
-            if (this.state.animationIndex < this.state.animationQueue.length) {
-                let animation = this.state.animationQueue[this.state.animationIndex];
-                if (animation.type === 'GRID') {
-                    grid[animation.row][animation.col].state = animation.cellState;
-                }
-                else if (animation.type === 'WORD') {
-                    //Iterate through the words and set the new state from the animation queue for the correct word.
-                    for (let i = 0; i < words.length; i++) {
-                        if (words[i].word === animation.wordString) {
-                            words[i].state = animation.wordState;
-                        }
-                    }
-                }
-                animationTime = animationTime * (animation.time || 1);
-                newAnimationIndex = this.state.animationIndex + 1;
-            }
-        }
-        else if (this.state.animationState === 'SKIP') {
-            let i = this.state.animationIndex;
-            //Iterate through the remainder of the animation queue and apply all animations in one go.
-            while (i < this.state.animationQueue.length) {
-                let animation = this.state.animationQueue[i];
-                if (animation.type === 'GRID') {
-                    grid[animation.row][animation.col].state = animation.cellState;
-                }
-                else if (animation.type === 'WORD') {
-                    //Iterate through the words and set the new state from the animation queue for the correct word.
-                    for (let i = 0; i < words.length; i++) {
-                        if (words[i].word === animation.wordString) {
-                            words[i].state = animation.wordState;
-                        }
-                    }
-                }
-                i++;
-            }
-            newAnimationIndex = i;
-        }
-
-        //If we have reached the end of the animation queue then stop the polling.
-        if (newAnimationIndex >= this.state.animationQueue.length) {
-            newAnimationState = 'STOP'
-        }
-
-        //Set the state now that the latest animation has been applied.
+        //Set the animation array state to trigger a re-render.
         this.setState({
+            animationArray: this.animationArray,
+            animationIndex: 0,
             grid: grid,
             words: words,
-            animationState: newAnimationState,
-            animationIndex: newAnimationIndex
+            wordsAndGridInSync: true
         }, () => {
-            //Set the timeout for the next queue poll if the animationState isn't stopped.
-            if (this.state.animationState !== 'STOP') {
-                this.animationCancellationToken = setTimeout(this.doAnimation, animationTime);
+            //Do the callback if one is supplied.
+            if (callback) {
+                callback();
             }
         });
     }
 
-    replayAnimation = () => {
-        //Set all words to be not shown.
-        let words = createDeepCopy(this.state.words);
-        for (let i = 0; i < words.length; i++) {
-            words[i].state = '';
+/***********************************************************
+Do the next animation in the array.
+***********************************************************/
+
+    doOneAnimation = () => {
+        const animation = this.state.animationArray[this.state.animationIndex];
+
+        if (animation.type === 'grid') {
+            const newGrid = createDeepCopy(this.state.grid);
+
+            //Change the state of the grid cell specified in the animation.
+            newGrid[animation.row][animation.column].state = animation.state;
+
+            this.setState({
+                grid: newGrid
+            });
+        }
+        else if (animation.type === 'words') {
+            const newWords = createDeepCopy(this.state.words);
+
+            //Find the word affected by the animation and change its state.
+            for (let i = 0; i < newWords.length; i++) {
+                if (newWords[i].word === animation.word) {
+                    newWords[i].state = animation.state;
+                }
+            }
+
+            this.setState({
+                words: newWords
+            });
+        }
+        
+        //Increment the animation index.
+        this.setState((state) => {
+            return { animationIndex: state.animationIndex + 1 }
+        });
+    }
+
+/***********************************************************
+Do all the remaining animations in the array.
+***********************************************************/
+
+    doRemainingAnimations = () => {
+        let newAnimationIndex = this.state.animationIndex;
+        const newGrid = createDeepCopy(this.state.grid);
+        const newWords = createDeepCopy(this.state.words);
+
+        //Loop through the remaining animations
+        while (newAnimationIndex < this.state.animationArray.length) {
+            const animation = this.state.animationArray[newAnimationIndex];
+
+            if (animation.type === 'grid') {
+                //Change the state of the grid cell specified in the animation.
+                newGrid[animation.row][animation.column].state = animation.state;
+            }
+            else if (animation.type === 'words') {
+                //Find the word affected by the animation and change its state.
+                for (let i = 0; i < newWords.length; i++) {
+                    if (newWords[i].word === animation.word) {
+                        newWords[i].state = animation.state;
+                    }
+                }
+            };
+            newAnimationIndex++;
         }
 
         this.setState({
-            animationState: 'STOP',
-            words: words
-        }, () => {
-            //Stop the current animation queue polling process if there is one running.
-            if (this.animationCancellationToken !== null) {
-                clearTimeout(this.animationCancellationToken);
-            }
-            this.setState({
-                animationState: 'REPLAY'
-            }, () => {
-                this.doAnimation();
-            });
+            animationIndex: newAnimationIndex,
+            grid: newGrid,
+            words: newWords
         });
     }
 
+/***********************************************************
+Replay the animation from the start.
+***********************************************************/
+
+    replayAnimation = (callback) => {
+        //Reset the states/colours on the grid.
+        let newGrid = createDeepCopy(this.state.grid);
+        for (let i = 0; i < newGrid.length; i++) {
+            for (let j = 0; j < newGrid[i].length; j++) {
+                newGrid[i][j].state = '';
+            }
+        }
+
+        //Set all words to be not shown.
+        let newWords = createDeepCopy(this.state.words);
+        for (let i = 0; i < newWords.length; i++) {
+            newWords[i].state = '';
+        }
+
+        this.setState({
+            animationIndex: 0,
+            grid: newGrid,
+            words: newWords
+        }, () => {
+            //Do the callback if one is provided.
+            if (callback) {
+                callback();
+            }
+        });
+    }
+
+/***********************************************************
+Check if the animation is still running.
+***********************************************************/
+
     isAnimationRunning = () => {
-        if (this.state.animationQueue.length > 0
-            && this.state.animationIndex < this.state.animationQueue.length) {
+        if (this.state.animationArray.length > 0
+            && this.state.animationIndex < this.state.animationArray.length) {
             return true;
         }
         else {
@@ -618,17 +701,9 @@ class WordSearch extends React.Component {
         }
     }
 
-    changeAnimationSpeed = (event) => {
-        let speed = event.target.value;
-
-        this.setState({
-            animationSpeed: speed
-        });
-    }
-
-    /***********************************************************
-    Word Search Preparation Methods
-    ***********************************************************/
+/***********************************************************
+Reset the words list, and clean them ready for use.
+***********************************************************/
 
     resetAndCleanWords = () => {
         //Reset words.
@@ -637,6 +712,7 @@ class WordSearch extends React.Component {
             words[i].cells = new Set(); //Cells will be re-populated by the word search algorithm.
             words[i].state = ''; //No words are "show me"d yet.
         }
+
         //Clean words.
         let distinctWords = new Set();
         for (let i = words.length - 1; i >= 0; i--) {
@@ -660,77 +736,11 @@ class WordSearch extends React.Component {
         return words;
     }
 
-    doWordSearch = () => {
-        //If the row/column count input is not a valid number, then return now.
-        if (this.state.rowCount === '') {
-            return;
-        }
+/***********************************************************
+Change the number of rows and columns in the grid.
+***********************************************************/
 
-        let words = this.resetAndCleanWords();
-
-        //Set words and animation queue in state.
-        this.setState({
-            words: words,
-            //Reset the animation.
-            animationQueue: [],
-            animationIndex: 0,
-            animationState: 'STOP'
-        }, () => {
-            //Stop the current animation queue polling process if it is running.
-            if (this.animationCancellationToken !== null) {
-                clearTimeout(this.animationCancellationToken);
-            }
-
-            //Ensure that the grid is only populated AFTER the words have been reset and cleaned.
-            let grid = this.populateGrid();
-
-            this.setState({
-                grid: grid,
-                animationState: 'PLAY'
-            }, () => {
-                //Ensure that the word search algorithm and the animation only start AFTER the grid state has been updated/populated.
-                let wordSearchResult = this.wordSearch();
-
-                //Reset the grid cells states ready for the animation to start.
-                for (let i = 0; i < wordSearchResult.grid.length; i++) {
-                    for (let j = 0; j < wordSearchResult.grid[i].length; j++) {
-                        wordSearchResult.grid[i][j].state = '';
-                    }
-                }
-
-                //Reset the word states ready for the animation to start.
-                for (let i = 0; i < wordSearchResult.words.length; i++) {
-                    wordSearchResult.words[i].state = '';
-                }
-
-                this.setState({
-                    grid: wordSearchResult.grid,
-                    words: wordSearchResult.words,
-                    wordsAndGridInSync: true
-                }, () => {
-                    //The first animation should only happen AFTER the grid and words have been updated using the wordSearch algorithm
-                    //and AFTER the grid and word states have been reset.
-                    this.doAnimation();
-                });
-            });
-        });
-    }
-
-    /***********************************************************
-    UI Methods
-    ***********************************************************/
-
-    renderRow = (i) => {
-        let cells = this.state.grid[i].map((cell, index) =>
-            <td
-                className={this.getCellClass(cell)}
-                key={index.toString()}
-            >{cell.letter}</td>
-        );
-        return cells;
-    }
-
-    updateRowColumnCount = (event) => {
+    updateGridRowColumnCount = (event) => {
         //Set the new row and column count.
         let newRowColCount = parseInt(event.target.value);
 
@@ -767,6 +777,10 @@ class WordSearch extends React.Component {
         });
     }
 
+/***********************************************************
+Returns the class for a given cell based on its state.
+***********************************************************/
+
     getCellClass = (cell) => {
         switch (cell.state) {
             case 'PARTFOUND':
@@ -781,6 +795,10 @@ class WordSearch extends React.Component {
                 return "grid-cell";
         }
     }
+
+/***********************************************************
+Returns the class for a given word.
+***********************************************************/
 
     getWordInputClass = (word) => {
         if (!this.state.wordsAndGridInSync) {
@@ -797,12 +815,16 @@ class WordSearch extends React.Component {
         }
     }
 
+/***********************************************************
+Returns the class of a show me button.
+***********************************************************/
+
     getShowMeButtonClass = (word) => {
         //If there is no animation yet (because the search hasn't been run),
         //or the animation is still playing,
         //or the words and grid are not in sync
-        if (this.state.animationQueue.length === 0
-            || this.state.animationIndex < this.state.animationQueue.length
+        if (this.state.animationArray.length === 0
+            || this.state.animationIndex < this.state.animationArray.length
             || this.state.wordsAndGridInSync !== true) {
             //Hide the Show Me buttons.
             return "hidden";
@@ -810,14 +832,18 @@ class WordSearch extends React.Component {
         else {
             //If the "Show Me" button has been clicked for this word.
             if (word.state === 'SHOW') {
-                return "btn show-me-button word-search-show";
+                return "btn btn-primary show-me-button word-search-show";
             }
             else {
-                return "btn show-me-button";
+                return "btn btn-primary show-me-button";
             }
         }
         return "";
     }
+
+/***********************************************************
+Decides whether the add word button should be disabled.
+***********************************************************/
 
     shouldAddWordBeDisabled = () => {
         if (this.isAnimationRunning()
@@ -829,11 +855,11 @@ class WordSearch extends React.Component {
         }
     }
 
-    /***********************************************************
-    React Render Method
-    ***********************************************************/
+/***********************************************************
+Create and return the word list elements.
+***********************************************************/
 
-    render() {
+    createWordsList = () => {
         //Create the word list.
         const wordsList = this.state.words.map((word, index) => {
             return ([
@@ -868,11 +894,35 @@ class WordSearch extends React.Component {
             ])
         });
 
-        //Create the grid rows.
+        return wordsList;
+    }
+
+/***********************************************************
+Creates and returns a row of the grid.
+***********************************************************/
+
+    renderRow = (i) => {
+        let cells = this.state.grid[i].map((cell, index) =>
+            <td
+                className={this.getCellClass(cell)}
+                key={index.toString()}
+            >{cell.letter}</td>
+        );
+        return cells;
+    }
+
+/***********************************************************
+Creates and returns all grid rows.
+***********************************************************/
+
+    createGridRows = () => {
+        //First create the cells for all rows.
         let rowCells = [];
         for (let i = 0; i < this.state.grid.length; i++) {
             rowCells.push(this.renderRow(i));
         }
+
+        //Then create each row.
         const gridRows = rowCells.map((value, index) =>
             <tr
                 className="grid-row"
@@ -880,16 +930,29 @@ class WordSearch extends React.Component {
             >{value}</tr>
         );
 
+        return gridRows;
+    }
+
+/***********************************************************
+React Render Method.
+***********************************************************/
+
+    render() {
+        const wordsList = this.createWordsList();
+
+        //Create the grid rows.
+        const gridRows = this.createGridRows();
+
         //Build the Word Search.
         return (
             <Row>
                 <DocumentTitle documentTitle="Word Search" />
-                <Col>
+                <Col lg='6'>
                     <h3>Word Search</h3>
                     <h5>Intructions:</h5>
                     <ol>
                         <li className="instructions-list-item">Enter up to {this.maxWords} words. No duplicates.</li>
-                        <li className="instructions-list-item">Click "Start New Search".</li>
+                        <li className="instructions-list-item">Click "Start New Animation".</li>
                         <li className="instructions-list-item">Find the words before the algorithm does.</li>
                     </ol>
                     <h5>Rules:</h5>
@@ -934,56 +997,22 @@ class WordSearch extends React.Component {
                         onClick={() => this.addWord()}
                     >+</button>
                 </Col>
-                <Col>
-                    <button
-                        className="btn btn-success start-search-button"
-                        onClick={() => this.doWordSearch()}
-                    >Start New Search</button>
-                    <button
-                        title="Play/Pause"
-                        className="btn btn-primary grid-control-button"
-                        disabled={!this.state.wordsAndGridInSync}
-                        onClick={() => {
-                            this.setState({
-                                animationState: this.state.animationState === 'PLAY' ? 'Pause' : 'PLAY'
-                            });
-                        }}
-                    >{this.state.animationState === 'PLAY' ? '⏸️' : '▶️'}</button>
-                    <button
-                        title="Skip to the end"
-                        className="btn btn-primary grid-control-button"
-                        disabled={!this.state.wordsAndGridInSync}
-                        onClick={() => {
-                            this.setState({
-                                animationState: this.animationState === 'STOP' ? 'STOP' : 'SKIP'
-                            });
-                        }}
-                    >⏭️</button>
-                    <button
-                        title="Replay"
-                        className="btn btn-primary grid-control-button"
-                        disabled={!this.state.wordsAndGridInSync}
-                        onClick={this.replayAnimation}
-                    >🔄️</button>
-                    <br />
-                    <label
-                        htmlFor="animationSpeedRange"
-                        className="word-search-speed-label"
-                    >Animation Speed:</label>
-                    <input
-                        id="animationSpeedRange"
-                        type="range"
-                        min="25"
-                        max="300"
-                        className="custom-range word-search-speed-range"
-                        disabled={!this.state.wordsAndGridInSync}
-                        value={this.state.animationSpeed}
-                        onChange={(event) => this.changeAnimationSpeed(event)}
+                <Col lg='6'>
+                    <AnimationControl
+                        animationArray={this.state.animationArray}
+                        animationIndex={this.state.animationIndex}
+                        startNewAnimation={this.startNewAnimation}
+                        doOneAnimation={this.doOneAnimation}
+                        doRemainingAnimations={this.doRemainingAnimations}
+                        replayAnimation={this.replayAnimation}
+                        minTimeBetweenAnimationsMs={1}
+                        maxTimeBetweenAnimationsMs={500}
                     />
+                    <br />
                     <label>How Many Rows and Columns?</label>
                     <input
                         className="form-control row-count-input"
-                        disabled={this.isAnimationRunning()}
+                        readOnly={this.isAnimationRunning()}
                         maxLength="2"
                         value={this.state.rowCount}
                         onKeyDown={(event) => {
@@ -999,7 +1028,7 @@ class WordSearch extends React.Component {
                                 event.preventDefault();
                             }
                         }}
-                        onChange={(event) => this.updateRowColumnCount(event)}
+                        onChange={(event) => this.updateGridRowColumnCount(event)}
                     />
                     <br />
                     <table>

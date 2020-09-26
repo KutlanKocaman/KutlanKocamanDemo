@@ -1,6 +1,6 @@
 ﻿body {
-    --word-search-found-colour: #7cfc00;
-    --word-search-show-colour: #fcfb00;
+    --word-search-found-colour: lawngreen;
+    --word-search-show-colour: yellow;
 }
 
 .instructions-list-item {
@@ -37,7 +37,6 @@ input.word-search-show:read-only {
 
 .show-me-button {
     margin-bottom: 0.3em;
-    background-color: var(--colour-2);
 }
 
 .add-word-button {
@@ -66,6 +65,7 @@ input.word-search-show:read-only {
 
 .word-search-show {
     background-color: var(--word-search-show-colour);
+    color: black;
     transition: 0.2s;
 }
 

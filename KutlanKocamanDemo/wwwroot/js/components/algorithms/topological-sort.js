@@ -68,7 +68,7 @@ export class TopologicalSort extends React.Component {
     }
 
 /***********************************************************
-Does the topological sort and fills the animationArray field.
+Do the topological sort and fill the animationArray field (not state).
 ***********************************************************/
 
     topologicalSort = () => {
@@ -110,12 +110,10 @@ Does the topological sort and fills the animationArray field.
             output.push(removedNodeValue);
 
             //Push the animation to show the node being removed.
-            this.animationArray.push(() => {
-                let newNodes = createDeepCopy(this.state.nodes);
-                newNodes[removedNodeValue].faded = true;
-                this.setState({
-                    nodes: newNodes
-                });
+            this.animationArray.push({
+                type: 'nodes',
+                nodeValue: removedNodeValue,
+                state: 'FADED'
             });
 
             //If there are no edges originating from this node, continue on to the next node with no incoming edges.
@@ -124,20 +122,10 @@ Does the topological sort and fills the animationArray field.
             }
 
             //Push the animation to show the edges coming from the removed node also being removed.
-            this.animationArray.push(() => {
-                let newEdges = createDeepCopy(this.state.edges);
-
-                //Iterate through the edges hiding each edge which originates from the removed node.
-                for (let i = 0; i < Object.keys(newEdges).length; i++) {
-                    const edgeKey = Object.keys(newEdges)[i];
-                    if (parseInt(edgeKey.split(',')[0]) === removedNodeValue) {
-                        newEdges[edgeKey].faded = true;
-                    }
-                }
-
-                this.setState({
-                    edges: newEdges
-                });
+            this.animationArray.push({
+                type: 'edges',
+                nodeValue: removedNodeValue,
+                state: 'FADED'
             });
 
             //Remove all edges which go from the removed node to another node.
@@ -169,7 +157,7 @@ Method to pass to nodes to allow them to update their coordinates.
     }
 
 /***********************************************************
-Does the topological sort and fills the animationArray field
+Create the nodes.
 ***********************************************************/
 
     createNodes = () => {
@@ -188,7 +176,7 @@ Does the topological sort and fills the animationArray field
     }
 
 /***********************************************************
-Creates edges using the coordinates of the nodes being connected.
+Create edges using the coordinates of the nodes being connected.
 ***********************************************************/
 
     createEdges = () => {
@@ -215,7 +203,7 @@ Set node class.
 ***********************************************************/
 
     setNodeClass = (node) => {
-        if (node.hasOwnProperty('faded') && node.faded === true) {
+        if (node.hasOwnProperty('state') && node.state === 'FADED') {
             return 'graph-node-faded';
         }
         return '';
@@ -226,26 +214,30 @@ Set edge class.
 ***********************************************************/
 
     setEdgeClass = (edge) => {
-        if (edge.hasOwnProperty('faded') && edge.faded === true) {
+        if (edge.hasOwnProperty('state') && edge.state === 'FADED') {
             return 'graph-node-faded';
         }
         return '';
     }
 
 /***********************************************************
-Start a new animation
-***********************************************************/
+Start a new animation.
+************************************************************/
 
     startNewAnimation = (callback) => {
-        //Clear the animation array.
         this.animationArray = [];
 
-        //Fill the animation array.
+        const resetResult = this.resetAnimationStates();
+
+        //Fill this.animation array.
         this.topologicalSort();
 
         //Set the animation array state to trigger a re-render.
         this.setState({
-            animationArray: this.animationArray
+            animationArray: this.animationArray,
+            animationIndex: 0,
+            nodes: resetResult.nodes,
+            edges: resetResult.edges
         }, () => {
             //Do the callback if one is supplied.
             if(callback) {
@@ -255,34 +247,126 @@ Start a new animation
     }
 
 /***********************************************************
-Reset the animation by setting all nodes and edges to not faded.
+Do the next animation in the array.
 ***********************************************************/
 
-    resetAnimation = (callback) => {
-        let newNodes = createDeepCopy(this.state.nodes);
-        let newEdges = createDeepCopy(this.state.edges);
+    doOneAnimation = () => {
+        const animation = this.state.animationArray[this.state.animationIndex];
 
-        //Set all nodes to not be faded.
-        let nodeKeys = Object.keys(newNodes);
-        for (let i = 0; i < nodeKeys.length; i++) {
-            newNodes[nodeKeys[i]].faded = false;
+        if (animation.type === 'nodes') {
+            const newNodes = createDeepCopy(this.state.nodes);
+
+            //Change the node state to that given in the animation.
+            newNodes[animation.nodeValue].state = animation.state;
+
+            this.setState({
+                nodes: newNodes
+            });
+        }
+        else if (animation.type === 'edges') {
+            let newEdges = createDeepCopy(this.state.edges);
+
+            //Iterate through the edges setting the given animation state for each edge which originates from the removed node.
+            for (let i = 0; i < Object.keys(newEdges).length; i++) {
+                const edgeKey = Object.keys(newEdges)[i];
+                if (parseInt(edgeKey.split(',')[0]) === animation.nodeValue) {
+                    newEdges[edgeKey].state = animation.state;
+                }
+            }
+
+            this.setState({
+                edges: newEdges
+            });
         }
 
-        //Set all nodes to not be faded.
-        let edgeKeys = Object.keys(newEdges);
-        for (let i = 0; i < edgeKeys.length; i++) {
-            newEdges[edgeKeys[i]].faded = false;
+        //Increment the animation index.
+        this.setState((state) => {
+            return { animationIndex: state.animationIndex + 1 }
+        });
+    }
+
+/***********************************************************
+Do all the remaining animations in the array.
+***********************************************************/
+
+    doRemainingAnimations = () => {
+        let newAnimationIndex = this.state.animationIndex;
+        const newNodes = createDeepCopy(this.state.nodes);
+        let newEdges = createDeepCopy(this.state.edges);
+
+        //Loop through the remaining animations
+        while (newAnimationIndex < this.state.animationArray.length) {
+            const animation = this.state.animationArray[newAnimationIndex];
+            if (animation.type === 'nodes') {
+                //Change the node state to that given in the animation.
+                newNodes[animation.nodeValue].state = animation.state;
+
+                this.setState({
+                    nodes: newNodes
+                });
+            }
+            else if (animation.type === 'edges') {
+                //Iterate through the edges setting the given animation state for each edge which originates from the removed node.
+                for (let i = 0; i < Object.keys(newEdges).length; i++) {
+                    const edgeKey = Object.keys(newEdges)[i];
+                    if (parseInt(edgeKey.split(',')[0]) === animation.nodeValue) {
+                        newEdges[edgeKey].state = animation.state;
+                    }
+                }
+            }
+            newAnimationIndex++;
         }
 
         this.setState({
+            animationIndex: newAnimationIndex,
             nodes: newNodes,
             edges: newEdges
+        });
+    }
+
+/***********************************************************
+Replay the animation from the start.
+***********************************************************/
+
+    replayAnimation = (callback) => {
+        const resetResult = this.resetAnimationStates();
+
+        this.setState({
+            animationIndex: 0,
+            nodes: resetResult.nodes,
+            edges: resetResult.edges
         }, () => {
             //Do the callback if one is provided.
             if (callback) {
                 callback();
             }
         });
+    }
+
+/***********************************************************
+Reset the animation states ready for a new animation to start.
+***********************************************************/
+
+    resetAnimationStates = () => {
+        let newNodes = createDeepCopy(this.state.nodes);
+        let newEdges = createDeepCopy(this.state.edges);
+
+        //Reset node states.
+        let nodeKeys = Object.keys(newNodes);
+        for (let i = 0; i < nodeKeys.length; i++) {
+            newNodes[nodeKeys[i]].state = '';
+        }
+
+        //Reset edge states.
+        let edgeKeys = Object.keys(newEdges);
+        for (let i = 0; i < edgeKeys.length; i++) {
+            newEdges[edgeKeys[i]].state = '';
+        }
+
+        return {
+            nodes: newNodes,
+            edges: newEdges
+        }
     }
 
 /***********************************************************
@@ -313,7 +397,9 @@ React Render Method
                         animationArray={this.state.animationArray}
                         animationIndex={this.state.animationIndex}
                         startNewAnimation={this.startNewAnimation}
-                        resetAnimation={this.resetAnimation}
+                        doOneAnimation={this.doOneAnimation}
+                        doRemainingAnimations={this.doRemainingAnimations}
+                        replayAnimation={this.replayAnimation}
                     />
                     <br />
                     <GraphArea>

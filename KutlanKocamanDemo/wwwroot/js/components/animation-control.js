@@ -31,31 +31,21 @@ export class AnimationControl extends React.Component {
         let timeBetweenAnimationsMs = this.minTimeBetweenAnimationsMs
             + (this.maxTimeBetweenAnimationsMs - this.minTimeBetweenAnimationsMs) * (100 - this.state.animationSpeed) * 0.01;
 
-        //If the words and grid are out of sync, then stop the animation.
-        //if (!this.state.wordsAndGridInSync) {
-        //    return;
-        //}
-        //NEED A DELEGATE TO STOP THE ANIMATION? PASS SOMETHING INTO PROPS?
-
         if (this.state.animationState === 'REPLAY') {
             newAnimationState = 'PLAY';
             newAnimationIndex = 0;
-
-            //Use the function passed in to reset the animation.
-            this.props.resetAnimation();
         }
         else if (this.state.animationState === 'PLAY') {
             if (newAnimationIndex < this.props.animationArray.length) {
-                //Run the animation from the array.
-                this.props.animationArray[newAnimationIndex++]();
+                //Call the function passed in to do one animation.
+                this.props.doOneAnimation();
+                newAnimationIndex++;
             }
         }
         else if (this.state.animationState === 'SKIP') {
-            //Iterate through the remainder of the animation queue and apply all animations in one go.
-            while (newAnimationIndex < this.props.animationArray.length) {
-                //Run the animation from the array.
-                this.props.animationArray[newAnimationIndex++]();
-            }
+            //Call the function passed in to do all remaining animations.
+            this.props.doRemainingAnimations();
+            newAnimationIndex = this.props.animationArray.length;
         }
 
         //If we have reached the end of the animation queue then stop the polling.
@@ -76,25 +66,31 @@ export class AnimationControl extends React.Component {
     }
 
     startNewAnimation = () => {
-        //Do the function passed in to reset the animation.
-        this.props.resetAnimation(() => {
-            //Then do the function passed in to start a new animation.
-            this.props.startNewAnimation(() => {
-                //Then set the animation index to 0 and PLAY.
-                this.setState({
-                    animationIndex: 0,
-                    animationState: 'PLAY'
-                }, () => {
-                    //Finally start the animation process.
-                    this.doAnimation();
-                });
+        //Stop the current animation queue polling process if there is one running.
+        if (this._animationCancellationToken !== null) {
+            clearTimeout(this._animationCancellationToken);
+        }
+
+        //Then do the function passed in to start a new animation.
+        this.props.startNewAnimation(() => {
+            //Then set the animation index to 0 and PLAY.
+            this.setState({
+                animationIndex: 0,
+                animationState: 'PLAY'
+            }, () => {
+                //Finally start the animation process.
+                this.doAnimation();
             });
         });
     }
 
     playPauseAnimation = () => {
         this.setState((state) => {
-            animationState: state.animationState === 'PLAY' ? 'PAUSE' : 'PLAY'
+            return { animationState: state.animationState === 'PLAY' ? 'STOP' : 'PLAY' }
+        }, () => {
+            if (this.state.animationState === 'PLAY') {
+                this.doAnimation();
+            }
         });
     }
 
@@ -106,13 +102,13 @@ export class AnimationControl extends React.Component {
     }
 
     replayAnimation = () => {
-        this.setState({
-            animationState: 'STOP'
-        }, () => {
-            //Stop the current animation queue polling process if there is one running.
-            if (this._animationCancellationToken !== null) {
-                clearTimeout(this._animationCancellationToken);
-            }
+        //Stop the current animation queue polling process if there is one running.
+        if (this._animationCancellationToken !== null) {
+            clearTimeout(this._animationCancellationToken);
+        }
+
+        //Do the replayAnimation call back, then replay.
+        this.props.replayAnimation(() => {
             this.setState({
                 animationState: 'REPLAY'
             }, () => {
