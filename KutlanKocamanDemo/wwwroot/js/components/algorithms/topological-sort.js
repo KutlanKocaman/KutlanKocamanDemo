@@ -64,6 +64,7 @@ export class TopologicalSort extends React.Component {
                 '6,7': {},
                 '7,4': {}
             },
+            isNodeBeingDeleted: false,
             isEdgeBeingCreated: false,
             newEdgeNodes: [],
             animationArray: [],
@@ -79,7 +80,13 @@ Do the topological sort and fill the animationArray field (not state).
         let nodes = createDeepCopy(this.state.nodes);
         let edges = createDeepCopy(this.state.edges);
         let adjacencyList = {};
-        let indegrees = Array(Object.keys(nodes).length).fill(0);
+        let indegrees = {};
+
+        //Create a dictionary to hold indegrees.
+        const nodeKeys = Object.keys(nodes);
+        for (let i = 0; i < nodeKeys.length; i++) {
+            indegrees[nodeKeys[i]] = 0;
+        }
 
         //Iterate through the edges and build the adjacency list and indegree counts.
         for (let i = 0; i < Object.keys(edges).length; i++) {
@@ -96,18 +103,19 @@ Do the topological sort and fill the animationArray field (not state).
 
         //Set of nodes with no incoming edge.
         let indegreeZeroNodes = new Set();
-        for (let i = 0; i < indegrees.length; i++) {
-            if (indegrees[i] === 0) {
-                indegreeZeroNodes.add(i);
+        const indegreeKeys = Object.keys(indegrees);
+        for (let i = 0; i < indegreeKeys.length; i++) {
+            if (indegrees[indegreeKeys[i]] === 0) {
+                indegreeZeroNodes.add(parseInt(indegreeKeys[i]));
             }
         }
-
+        
         //Build an output list by taking nodes with no more dependencies from the set.
         let output = [];
         let zeroIndegreeIterator = indegreeZeroNodes.values();
         while (indegreeZeroNodes.size > 0) { //Consider Object.keys(indegreeZeroNodes).length if this is buggy
             //Get the next node with no incoming edges from the set.
-            let removedNodeValue = zeroIndegreeIterator.next().value;
+            const removedNodeValue = zeroIndegreeIterator.next().value;
             indegreeZeroNodes.delete(removedNodeValue);
 
             //Add the node to the output.
@@ -173,6 +181,8 @@ Create the nodes.
                 yCoord={value.y}
                 updateCoords={this.updateCoords}
                 className={this.setNodeClass(value)}
+                isNodeBeingDeleted={this.state.isNodeBeingDeleted}
+                deleteNode={this.deleteNode}
                 isEdgeBeingCreated={this.state.isEdgeBeingCreated}
                 addNodeToNewEdge={this.addNodeToNewEdge}
             />
@@ -228,6 +238,42 @@ Process to allow the user to create a new node.
 
         this.setState({
             nodes: newNodes
+        });
+    }
+
+/***********************************************************
+Click handler to allow a user to delete a node.
+***********************************************************/
+
+    clickRemoveNode = () => {
+        this.setState((state) => {
+            return { isNodeBeingDeleted: !state.isNodeBeingDeleted }
+        });
+    }
+
+/***********************************************************
+Delete a node by value.
+***********************************************************/
+
+    deleteNode = (nodeValue) => {
+        const newNodes = createDeepCopy(this.state.nodes);
+        const newEdges = createDeepCopy(this.state.edges);
+        delete newNodes[nodeValue];
+
+        //Delete all the edges connected to the node.
+        let edgeKeys = Object.keys(newEdges);
+        for (let i = 0; i < edgeKeys.length; i++) {
+            const edgeNodes = edgeKeys[i].split(',');
+
+            if (edgeNodes[0] === nodeValue || edgeNodes[1] === nodeValue) {
+                delete newEdges[edgeKeys[i]];
+            }
+        }
+        
+        this.setState({
+            nodes: newNodes,
+            edges: newEdges,
+            isNodeBeingDeleted: false
         });
     }
 
@@ -340,7 +386,7 @@ Start a new animation.
 
         //Fill this.animation array.
         this.topologicalSort();
-
+        
         //Set the animation array state to trigger a re-render.
         this.setState({
             animationArray: this.animationArray,
@@ -361,7 +407,7 @@ Do the next animation in the array.
 
     doOneAnimation = () => {
         const animation = this.state.animationArray[this.state.animationIndex];
-
+        
         if (animation.type === 'nodes') {
             const newNodes = createDeepCopy(this.state.nodes);
 
@@ -512,6 +558,8 @@ React Render Method
                     />
                     <br />
                     <GraphEditer
+                        clickRemoveNode={this.clickRemoveNode}
+                        isNodeBeingDeleted={this.state.isNodeBeingDeleted}
                         isEdgeBeingCreated={this.state.isEdgeBeingCreated}
                         createNode={this.createNode}
                         createEdge={this.createEdge}

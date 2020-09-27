@@ -24,6 +24,12 @@ export class GraphNode extends React.Component {
         let clientX = isClickEvent ? event.clientX : event.touches[0].clientX;
         let clientY = isClickEvent ? event.clientY : event.touches[0].clientY;
 
+        //If a node is being deleted, use mousedown events to delete the node in question.
+        if (this.props.isNodeBeingDeleted) {
+            this.props.deleteNode(event.target.innerText);
+            return;
+        }
+
         //If an edge is being created, use mousedown events to select nodes for a new edge.
         if (this.props.isEdgeBeingCreated) {
             this.props.addNodeToNewEdge(event.target.innerText);

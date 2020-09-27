@@ -8,9 +8,30 @@ export class GraphEditer extends React.Component {
     constructor(props) {
         super(props);
 
+        this.createdNodeTimeoutToken;
+
         this.state = {
+            createdNode: false,
             createEdge: false
         };
+    }
+
+    createNodeClickHandler = () => {
+        //Clear any existing timeout for the created node popover, then create a new timeout.
+        clearTimeout(this.createdNodeTimeoutToken);
+        this.createdNodeTimeoutToken = setTimeout(() => {
+            this.setState({
+                createdNode: false
+            });
+        }, 3000);
+
+        //Set createdNode so that the popover appears.
+        this.setState({
+            createdNode: true
+        });
+
+        //Call the function passed in to create a node.
+        this.props.createNode();
     }
 
     getAddConnectorClass = () => {
@@ -25,13 +46,38 @@ export class GraphEditer extends React.Component {
             <Container>
                 <Row>
                     <Col xs='2' lg='1'>
-                        <div className='graph-node'>+</div>
+                        <div className='graph-node'> </div>
                     </Col>
                     <Col className='graph-editer-text'>
                         <Button
-                            color='primary'
-                            onClick={() => this.props.createNode()}
-                        >Add a node</Button>
+                            id='addNodeButton'
+                            color='success'
+                            onClick={() => this.createNodeClickHandler()}
+                        >+ Add</Button>
+                        <Popover
+                            placement='top'
+                            isOpen={this.state.createdNode}
+                            target='addNodeButton'
+                        >
+                            <PopoverBody>
+                                Added a node to the top left of the chart.
+                            </PopoverBody>
+                        </Popover>
+                        &nbsp;
+                        <Button
+                            id='removeNodeButton'
+                            color='danger'
+                            onClick={() => this.props.clickRemoveNode()}
+                        >- Remove</Button>
+                        <Popover
+                            placement='top'
+                            isOpen={this.props.isNodeBeingDeleted}
+                            target='removeNodeButton'
+                        >
+                            <PopoverBody>
+                                Click on a node to remove it.
+                            </PopoverBody>
+                        </Popover>
                     </Col>
                 </Row>
                 <Row>
@@ -46,10 +92,10 @@ export class GraphEditer extends React.Component {
                     <Col className='graph-editer-text'>
                         <Button
                             id='addConnectorButton'
-                            color='primary'
+                            color='success'
                             className={this.getAddConnectorClass()}
                             onClick={() => this.props.createEdge()}
-                        >Add a connector</Button>
+                        >+ Add</Button>
                         <Popover
                             placement='top'
                             isOpen={this.props.isEdgeBeingCreated}
