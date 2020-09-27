@@ -53,6 +53,7 @@ export class GraphEditer extends React.Component {
                             id='addNodeButton'
                             color='success'
                             onClick={() => this.createNodeClickHandler()}
+                            disabled={this.props.isAnimationRunning}
                         >+ Add</Button>
                         <Popover
                             placement='top'
@@ -68,6 +69,7 @@ export class GraphEditer extends React.Component {
                             id='removeNodeButton'
                             color='danger'
                             onClick={() => this.props.clickRemoveNode()}
+                            disabled={this.props.isAnimationRunning}
                         >- Remove</Button>
                         <Popover
                             placement='top'
@@ -75,7 +77,7 @@ export class GraphEditer extends React.Component {
                             target='removeNodeButton'
                         >
                             <PopoverBody>
-                                Click on a node to remove it.
+                                Select a node to remove it.
                             </PopoverBody>
                         </Popover>
                     </Col>
@@ -94,7 +96,8 @@ export class GraphEditer extends React.Component {
                             id='addEdgeButton'
                             color='success'
                             className={this.getAddEdgeClass()}
-                            onClick={() => this.props.createEdge()}
+                            onClick={() => this.props.clickCreateEdge()}
+                            disabled={this.props.isAnimationRunning}
                         >+ Add</Button>
                         <Popover
                             placement='top'
@@ -110,6 +113,7 @@ export class GraphEditer extends React.Component {
                             id='removeEdgeButton'
                             color='danger'
                             onClick={() => this.props.clickRemoveEdge()}
+                            disabled={this.props.isAnimationRunning}
                         >- Remove</Button>
                         <Popover
                             placement='top'

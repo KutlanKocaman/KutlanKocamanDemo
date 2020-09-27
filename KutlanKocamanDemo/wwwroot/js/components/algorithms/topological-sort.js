@@ -69,7 +69,8 @@ export class TopologicalSort extends React.Component {
             isEdgeBeingDeleted: false,
             newEdgeNodes: [],
             animationArray: [],
-            animationIndex: 0
+            animationIndex: 0,
+            isAnimationInSync: false,
         }
     }
 
@@ -241,7 +242,8 @@ Process to allow the user to create a new node.
         }
 
         this.setState({
-            nodes: newNodes
+            nodes: newNodes,
+            isAnimationInSync: false
         });
     }
 
@@ -250,6 +252,14 @@ Click handler to allow a user to delete a node.
 ***********************************************************/
 
     clickRemoveNode = () => {
+        //Deactivate the other graph object creation/deletion actions.
+        if (!this.state.isNodeBeingDeleted) {
+            this.setState({
+                isEdgeBeingCreated: false,
+                isEdgeBeingDeleted: false,
+            });
+        }
+
         this.setState((state) => {
             return { isNodeBeingDeleted: !state.isNodeBeingDeleted }
         });
@@ -277,7 +287,8 @@ Delete a node by value.
         this.setState({
             nodes: newNodes,
             edges: newEdges,
-            isNodeBeingDeleted: false
+            isNodeBeingDeleted: false,
+            isAnimationInSync: false
         });
     }
 
@@ -285,7 +296,15 @@ Delete a node by value.
 Process to allow the user to create a new edge.
 ***********************************************************/
 
-    createEdge = () => {
+    clickCreateEdge = () => {
+        //Deactivate the other graph object creation/deletion actions.
+        if (!this.state.isEdgeBeingCreated) {
+            this.setState({
+                isNodeBeingDeleted: false,
+                isEdgeBeingDeleted: false,
+            });
+        }
+
         //Empty the newEdgeNodes array.
         this.newEdgeNodes = [];
 
@@ -348,7 +367,8 @@ Add a node to the new edge being created.
             this.setState({
                 nodes: newNodes,
                 edges: newEdges,
-                isEdgeBeingCreated: false
+                isEdgeBeingCreated: false,
+                isAnimationInSync: false
             });
         }
     }
@@ -358,6 +378,14 @@ Click handler to allow a user to delete an edge.
 ***********************************************************/
 
     clickRemoveEdge = () => {
+        //Deactivate the other graph object creation/deletion actions.
+        if (!this.state.isEdgeBeingDeleted) {
+            this.setState({
+                isNodeBeingDeleted: false,
+                isEdgeBeingCreated: false,
+            });
+        }
+
         this.setState((state) => {
             return { isEdgeBeingDeleted: !state.isEdgeBeingDeleted }
         });
@@ -374,7 +402,8 @@ Delete an edge by value.
 
         this.setState({
             edges: newEdges,
-            isEdgeBeingDeleted: false
+            isEdgeBeingDeleted: false,
+            isAnimationInSync: false
         });
     }
 
@@ -423,7 +452,11 @@ Start a new animation.
             animationArray: this.animationArray,
             animationIndex: 0,
             nodes: resetResult.nodes,
-            edges: resetResult.edges
+            edges: resetResult.edges,
+            isNodeBeingDeleted: false,
+            isEdgeBeingCreated: false,
+            isEdgeBeingDeleted: false,
+            isAnimationInSync: true
         }, () => {
             //Do the callback if one is supplied.
             if(callback) {
@@ -556,6 +589,20 @@ Reset the animation states ready for a new animation to start.
     }
 
 /***********************************************************
+Check if the animation is still running.
+***********************************************************/
+
+    isAnimationRunning = () => {
+        if (this.state.animationArray.length > 0
+            && this.state.animationIndex < this.state.animationArray.length) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+/***********************************************************
 React Render Method
 ***********************************************************/
 
@@ -586,6 +633,7 @@ React Render Method
                         doOneAnimation={this.doOneAnimation}
                         doRemainingAnimations={this.doRemainingAnimations}
                         replayAnimation={this.replayAnimation}
+                        buttonsDisabled={!this.state.isAnimationInSync}
                     />
                     <br />
                     <GraphEditer
@@ -595,7 +643,8 @@ React Render Method
                         clickRemoveEdge={this.clickRemoveEdge}
                         isEdgeBeingDeleted={this.state.isEdgeBeingDeleted}
                         createNode={this.createNode}
-                        createEdge={this.createEdge}
+                        clickCreateEdge={this.clickCreateEdge}
+                        isAnimationRunning={this.isAnimationRunning()}
                     />
                     <br />
                     <GraphArea>
