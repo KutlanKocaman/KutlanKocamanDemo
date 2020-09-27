@@ -34,7 +34,7 @@ export class GraphEditer extends React.Component {
         this.props.createNode();
     }
 
-    getAddConnectorClass = () => {
+    getAddEdgeClass = () => {
         if (this.props.isEdgeBeingCreated) {
             return 'graph-editer-creating';
         }
@@ -60,7 +60,7 @@ export class GraphEditer extends React.Component {
                             target='addNodeButton'
                         >
                             <PopoverBody>
-                                Added a node to the top left of the chart.
+                                A node has been added to the top left of the chart.
                             </PopoverBody>
                         </Popover>
                         &nbsp;
@@ -91,18 +91,33 @@ export class GraphEditer extends React.Component {
                     </Col>
                     <Col className='graph-editer-text'>
                         <Button
-                            id='addConnectorButton'
+                            id='addEdgeButton'
                             color='success'
-                            className={this.getAddConnectorClass()}
+                            className={this.getAddEdgeClass()}
                             onClick={() => this.props.createEdge()}
                         >+ Add</Button>
                         <Popover
                             placement='top'
                             isOpen={this.props.isEdgeBeingCreated}
-                            target='addConnectorButton'
+                            target='addEdgeButton'
                         >
                             <PopoverBody>
-                                Click on two nodes to create a connection between them.
+                                Select two nodes to create an arrow between them.
+                            </PopoverBody>
+                        </Popover>
+                        &nbsp;
+                        <Button
+                            id='removeEdgeButton'
+                            color='danger'
+                            onClick={() => this.props.clickRemoveEdge()}
+                        >- Remove</Button>
+                        <Popover
+                            placement='top'
+                            isOpen={this.props.isEdgeBeingDeleted}
+                            target='removeEdgeButton'
+                        >
+                            <PopoverBody>
+                                Select an arrow to remove it.
                             </PopoverBody>
                         </Popover>
                     </Col>

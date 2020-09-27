@@ -66,6 +66,7 @@ export class TopologicalSort extends React.Component {
             },
             isNodeBeingDeleted: false,
             isEdgeBeingCreated: false,
+            isEdgeBeingDeleted: false,
             newEdgeNodes: [],
             animationArray: [],
             animationIndex: 0
@@ -201,12 +202,15 @@ Create edges using the coordinates of the nodes being connected.
 
             return (
                 <GraphEdge
+                    id={key}
                     key={key}
                     x1={this.state.nodes[edgeNodes[0]].x}
                     y1={this.state.nodes[edgeNodes[0]].y}
                     x2={this.state.nodes[edgeNodes[1]].x}
                     y2={this.state.nodes[edgeNodes[1]].y}
                     className={this.setEdgeClass(value)}
+                    isEdgeBeingDeleted={this.state.isEdgeBeingDeleted}
+                    deleteEdge={this.deleteEdge}
                 />
             );
         });
@@ -288,12 +292,14 @@ Process to allow the user to create a new edge.
         //If the user has clicked the "Add a connector" button again before creating an edge, un-select all nodes.
         if (this.state.isEdgeBeingCreated) {
             const newNodes = createDeepCopy(this.state.nodes);
+
             let nodeKeys = Object.keys(newNodes);
             for (let i = 0; i < nodeKeys.length; i++) {
                 if (newNodes[nodeKeys[i]].state === 'SELECTED') {
                     newNodes[nodeKeys[i]].state = '';
                 }
             }
+
             this.setState({
                 nodes: newNodes
             });
@@ -345,6 +351,31 @@ Add a node to the new edge being created.
                 isEdgeBeingCreated: false
             });
         }
+    }
+
+/***********************************************************
+Click handler to allow a user to delete an edge.
+***********************************************************/
+
+    clickRemoveEdge = () => {
+        this.setState((state) => {
+            return { isEdgeBeingDeleted: !state.isEdgeBeingDeleted }
+        });
+    }
+
+/***********************************************************
+Delete an edge by value.
+***********************************************************/
+
+    deleteEdge = (edgeKey) => {
+        const newEdges = createDeepCopy(this.state.edges);
+        
+        delete newEdges[edgeKey];
+
+        this.setState({
+            edges: newEdges,
+            isEdgeBeingDeleted: false
+        });
     }
 
 /***********************************************************
@@ -561,6 +592,8 @@ React Render Method
                         clickRemoveNode={this.clickRemoveNode}
                         isNodeBeingDeleted={this.state.isNodeBeingDeleted}
                         isEdgeBeingCreated={this.state.isEdgeBeingCreated}
+                        clickRemoveEdge={this.clickRemoveEdge}
+                        isEdgeBeingDeleted={this.state.isEdgeBeingDeleted}
                         createNode={this.createNode}
                         createEdge={this.createEdge}
                     />

@@ -7,6 +7,18 @@ export class GraphEdge extends React.Component {
         super(props);
     }
 
+    clickHandler = (event) => {
+        //If an edge is being deleted, pass the id of the clicked object to the deleteEdge function.
+        if (this.props.isEdgeBeingDeleted) {
+            //Get the edge id from the end of the clicked element's id.
+            const clickedElementId = event.target.id;
+            const edgeId = clickedElementId.split('_')[1];
+
+            //Call the deleteEdge function which was passed in.
+            this.props.deleteEdge(edgeId);
+        }
+    }
+
     setStyle = () => {
         //Get the coordinates from props.
         //Add some extra on so that we draw the line to the circumference of the node, not the centre.
@@ -48,10 +60,15 @@ export class GraphEdge extends React.Component {
     render() {
         return (
             <div
+                id={'graph-edge-line_' + this.props.id}
                 className={this.setClass()}
                 style={this.setStyle()}
+                onClick={() => this.clickHandler(event)}
             >
-                <div className="graph-edge-pointer" />
+                <div
+                    id={'graph-edge-pointer_' + this.props.id}
+                    className="graph-edge-pointer"
+                />
             </div>
         );
     }
