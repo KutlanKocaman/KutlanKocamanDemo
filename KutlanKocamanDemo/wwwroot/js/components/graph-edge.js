@@ -28,7 +28,7 @@ export class GraphEdge extends React.Component {
         let y2 = this.props.y2 + 20;
 
         //Calculate the length of the edge line.
-        let length = Math.sqrt(((x1 - x2) * (x1 - x2)) + ((y1 - y2) * (y1 - y2)));
+        let length = Math.sqrt(((x1 - x2) * (x1 - x2)) + ((y1 - y2) * (y1 - y2))) - 2;
 
         //Calculate the mid points of the x and y coordinates.
         let xMid = (x1 + x2) / 2;
@@ -38,12 +38,15 @@ export class GraphEdge extends React.Component {
         let slopeRadians = Math.atan2(y1 - y2, x1 - x2);
         let slopeDegrees = (slopeRadians * 180) / Math.PI;
 
+        //Translate the arrows to get them to tocuh the edge of the nodes properly.
+        const adjust = 1.8 + Math.sin((slopeDegrees + 180) * Math.PI / 180) * 2;
+
         //Use the calculated values to style the line.
         let positionStyles = {
             width: length - 40,
             left: xMid - (length / 2) + 20,
             top: yMid,
-            transform: 'rotate(' + slopeDegrees + 'deg)'
+            transform: 'rotate(' + slopeDegrees + 'deg) translate(' + adjust + 'px, 0px)'
         }
 
         return positionStyles;
