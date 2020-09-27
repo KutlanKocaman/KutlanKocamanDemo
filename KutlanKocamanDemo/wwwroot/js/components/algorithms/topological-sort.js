@@ -19,36 +19,52 @@ export class TopologicalSort extends React.Component {
         this.state = {
             nodes: {
                 0: {
-                    x: 50,
+                    x: 40,
                     y: 50
                 },
                 1: {
-                    x: 150,
+                    x: 140,
                     y: 50
                 },
                 2: {
-                    x: 250,
+                    x: 240,
                     y: 50
                 },
                 3: {
-                    x: 50,
-                    y: 150
+                    x: 40,
+                    y: 140
                 },
                 4: {
-                    x: 150,
-                    y: 150
+                    x: 140,
+                    y: 140
                 },
                 5: {
-                    x: 250,
-                    y: 150
+                    x: 240,
+                    y: 140
                 },
                 6: {
-                    x: 50,
-                    y: 250
+                    x: 40,
+                    y: 240
                 },
                 7: {
-                    x: 150,
-                    y: 250
+                    x: 140,
+                    y: 240
+                },
+                8: {
+                    x: 240,
+                    y: 240
+                },
+                9: {
+                    x: 40,
+                    y: 340
+                },
+                10: {
+                    x: 140,
+                    y: 340
+                },
+                11: {
+                    x: 240,
+                    y: 340
                 }
             },
             edges: {
@@ -61,8 +77,12 @@ export class TopologicalSort extends React.Component {
                 '5,4': {},
                 '5,7': {},
                 '6,3': {},
-                '6,7': {},
-                '7,4': {}
+                '7,4': {},
+                '7,6': {},
+                '7,10': {},
+                '9,6': {},
+                '10,9': {},
+                '11,8': {},
             },
             isNodeBeingDeleted: false,
             isEdgeBeingCreated: false,
@@ -71,6 +91,7 @@ export class TopologicalSort extends React.Component {
             animationArray: [],
             animationIndex: 0,
             isAnimationInSync: false,
+            algorithmResult: 'Result: '
         }
     }
 
@@ -153,7 +174,13 @@ Do the topological sort and fill the animationArray field (not state).
                 }
             });
         }
-        console.log(output);
+        if (output.length !== nodeKeys.length) {
+            //There is a cycle
+            this.animationArray.push({
+                type: 'nodes',
+                nodeValue: 'can\'t complete - there is a cycle!'
+            });
+        }
     }
 
 /***********************************************************
@@ -453,6 +480,7 @@ Start a new animation.
             animationIndex: 0,
             nodes: resetResult.nodes,
             edges: resetResult.edges,
+            algorithmResult: resetResult.algorithmResult,
             isNodeBeingDeleted: false,
             isEdgeBeingCreated: false,
             isEdgeBeingDeleted: false,
@@ -474,12 +502,22 @@ Do the next animation in the array.
         
         if (animation.type === 'nodes') {
             const newNodes = createDeepCopy(this.state.nodes);
+            let newResult = createDeepCopy(this.state.algorithmResult);
 
             //Change the node state to that given in the animation.
-            newNodes[animation.nodeValue].state = animation.state;
+            if (newNodes.hasOwnProperty(animation.nodeValue)) {
+                newNodes[animation.nodeValue].state = animation.state;
+            }
+
+            //Add this node value to the result.
+            if (newResult !== 'Result: ') {
+                newResult = newResult.concat(', ');
+            }
+            newResult = newResult.concat(animation.nodeValue);
 
             this.setState({
-                nodes: newNodes
+                nodes: newNodes,
+                algorithmResult: newResult
             });
         }
         else if (animation.type === 'edges') {
@@ -497,6 +535,12 @@ Do the next animation in the array.
                 edges: newEdges
             });
         }
+        else if (animation.type === 'result') {
+            let newResult = createDeepCopy(this.state.algorithmResult);
+
+            newResult.concat(', ');
+            newResult.concat(animation.nodeValue);
+        }
 
         //Increment the animation index.
         this.setState((state) => {
@@ -511,6 +555,7 @@ Do all the remaining animations in the array.
     doRemainingAnimations = () => {
         let newAnimationIndex = this.state.animationIndex;
         const newNodes = createDeepCopy(this.state.nodes);
+        let newResult = createDeepCopy(this.state.algorithmResult);
         let newEdges = createDeepCopy(this.state.edges);
 
         //Loop through the remaining animations
@@ -518,10 +563,19 @@ Do all the remaining animations in the array.
             const animation = this.state.animationArray[newAnimationIndex];
             if (animation.type === 'nodes') {
                 //Change the node state to that given in the animation.
-                newNodes[animation.nodeValue].state = animation.state;
+                if (newNodes.hasOwnProperty(animation.nodeValue)) {
+                    newNodes[animation.nodeValue].state = animation.state;
+                }
+
+                //Add this node value to the result.
+                if (newResult !== 'Result: ') {
+                    newResult = newResult.concat(', ');
+                }
+                newResult = newResult.concat(animation.nodeValue);
 
                 this.setState({
-                    nodes: newNodes
+                    nodes: newNodes,
+                    algorithmResult: newResult
                 });
             }
             else if (animation.type === 'edges') {
@@ -553,7 +607,8 @@ Replay the animation from the start.
         this.setState({
             animationIndex: 0,
             nodes: resetResult.nodes,
-            edges: resetResult.edges
+            edges: resetResult.edges,
+            algorithmResult: resetResult.algorithmResult
         }, () => {
             //Do the callback if one is provided.
             if (callback) {
@@ -584,7 +639,8 @@ Reset the animation states ready for a new animation to start.
 
         return {
             nodes: newNodes,
-            edges: newEdges
+            edges: newEdges,
+            algorithmResult: 'Result: '
         }
     }
 
@@ -624,8 +680,6 @@ React Render Method
                         <li className="instructions-list-item">A node can't be added to the output until there are no incoming arrows.</li>
                         <li className="instructions-list-item">If there is a cycle (e.g. 0->1->0) the sort cannot complete.</li>
                     </ul>
-                </Col>
-                <Col lg='6'>
                     <AnimationControl
                         animationArray={this.state.animationArray}
                         animationIndex={this.state.animationIndex}
@@ -647,6 +701,13 @@ React Render Method
                         isAnimationRunning={this.isAnimationRunning()}
                     />
                     <br />
+                </Col>
+                <Col lg='6'>
+                    <Row>
+                        <Col>
+                            {this.state.algorithmResult}
+                        </Col>
+                    </Row>
                     <GraphArea>
                         {this.renderNodes()}
                         {this.renderEdges()}
