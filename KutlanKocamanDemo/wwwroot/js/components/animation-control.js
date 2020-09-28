@@ -95,9 +95,15 @@ export class AnimationControl extends React.Component {
     }
 
     skipAnimation = () => {
+        //Stop the current animation queue polling process if there is one running.
+        if (this._animationCancellationToken !== null) {
+            clearTimeout(this._animationCancellationToken);
+        }
         //Set the new animation state.
         this.setState({
             animationState: 'SKIP'
+        }, () => {
+            this.doAnimation();
         });
     }
 

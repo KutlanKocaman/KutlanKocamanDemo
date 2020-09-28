@@ -562,6 +562,11 @@ Start a new animation.
 
         let words = this.resetAndCleanWords();
 
+        //Don't do anything more if there are no words or no grid.
+        if (words.length === 0 || this.state.grid.length === 0) {
+            return;
+        }
+
         let grid = this.populateGrid(words);
 
         //Find the words - fill this.animationArray. Pass a deep copy of grid, so that we don't change the state.
@@ -1007,6 +1012,7 @@ React Render Method.
                         replayAnimation={this.replayAnimation}
                         minTimeBetweenAnimationsMs={1}
                         maxTimeBetweenAnimationsMs={500}
+                        buttonsDisabled={!this.state.wordsAndGridInSync}
                     />
                     <br />
                     <label>How Many Rows and Columns?</label>

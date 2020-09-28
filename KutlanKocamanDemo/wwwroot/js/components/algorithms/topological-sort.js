@@ -7,6 +7,7 @@ import { GraphEdge } from '../graph-edge';
 import { createDeepCopy } from "../../shared/functions";
 import { AnimationControl } from '../animation-control';
 import { GraphEditer } from '../graph-editer';
+import { ModalInformational } from "../modal-info";
 
 export class TopologicalSort extends React.Component {
     constructor(props) {
@@ -677,9 +678,40 @@ React Render Method
                     <h5>Explanation:</h5>
                     <ul>
                         <li className="instructions-list-item">A topological sort puts the nodes in order of the arrows.</li>
-                        <li className="instructions-list-item">A node can't be added to the output until there are no incoming arrows.</li>
+                        <li className="instructions-list-item">A node can't be added to the result until it has no incoming arrows.</li>
                         <li className="instructions-list-item">If there is a cycle (e.g. 0->1->0) the sort cannot complete.</li>
                     </ul>
+                    <ModalInformational
+                        buttonText="More Information"
+                        modalTitle="More Information"
+                        modalContents={
+                            <div>
+                                <p>
+                                    The algorithm is based
+                                    on <a href="https://en.wikipedia.org/wiki/Topological_sorting#Kahn's_algorithm" target="_blank">Kahn's algorithm</a>.
+                                    Here is how it works.
+                                </p>
+                                <p>
+                                    Firstly the "indegree" counts for each node (a.k.a. vertex) are calculated. The indegree count for a node is a count of
+                                    how many arrows (a.k.a. edges) point to that node directly.
+                                </p>
+                                <p>
+                                    Next, all nodes with an indegree count of 0 are added to a set, then are removed one by one and added to the sort result.
+                                    As each node with 0 indegree count is removed from the set and added to the result, all arrows which originate from this
+                                    node are removed, and the indegree counts of the nodes which these arrows point to are each reduced by 1. If any of these
+                                    nodes now have an indegree count of 0, then they are added to the set of 0 indegree nodes, and so the algorithm continues
+                                    until all nodes are added to the sort result... unless there is a cycle.
+                                </p>
+                                <p>
+                                    The algorithm has a time complexity of O(number of nodes + number of arrows), as in the worst case we iterate through
+                                    all the nodes and all the arrows. It saves time by figuring out in advance where each of the arrows terminate for each node.
+                                    This way, when a node is removed from the graph, all the nodes which need their indegree decrementing by 1 are known
+                                    without needing to search through all remaining the arrows for them.
+                                </p>
+                            </div>
+                        }
+                    />
+                    <br />
                     <AnimationControl
                         animationArray={this.state.animationArray}
                         animationIndex={this.state.animationIndex}

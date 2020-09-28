@@ -26,11 +26,11 @@ export class NavMenu extends Component {
                     Single Page App Menu
                 </DropdownToggle>
                 <DropdownMenu>
-                    <DropdownItem tag={Link} to="/WordSearch">
-                        Word Search Animation
-                    </DropdownItem>
                     <DropdownItem tag={Link} to="/TopologicalSort">
                         Topological Sort Animation
+                    </DropdownItem>
+                    <DropdownItem tag={Link} to="/WordSearch">
+                        Word Search Animation
                     </DropdownItem>
                 </DropdownMenu>
             </Dropdown>

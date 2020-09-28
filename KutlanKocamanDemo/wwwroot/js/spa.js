@@ -13,8 +13,8 @@ export default class App extends Component {
         return (
             <Layout>
                 <Route exact path='/' component={WordSearch} />
-                <Route path='/WordSearch' component={WordSearch} />
                 <Route path='/TopologicalSort' component={TopologicalSort} />
+                <Route path='/WordSearch' component={WordSearch} />
             </Layout>
         );
     }
