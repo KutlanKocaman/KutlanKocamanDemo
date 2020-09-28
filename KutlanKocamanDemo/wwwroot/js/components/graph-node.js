@@ -32,7 +32,11 @@ export class GraphNode extends React.Component {
 
         //If an edge is being created, use mousedown events to select nodes for a new edge.
         if (this.props.isEdgeBeingCreated) {
-            this.props.addNodeToNewEdge(event.target.innerText);
+            //Touching a mobile screen triggers a mousedown AND a touch event...
+            ///...to avoid creating an edge originating and terminating at the same node, use only the click event.
+            if (isClickEvent) {
+                this.props.addNodeToNewEdge(event.target.innerText);
+            }
             return;
         }
 
