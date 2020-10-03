@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   sodipodi:docname="KutlanCoder.svg"
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
+   id="svg8"
+   version="1.1"
+   viewBox="0 0 297.73114 76.171814"
+   height="76.171814mm"
+   width="297.73114mm">
+  <defs
+     id="defs2">
+    <rect
+       id="rect891"
+       height="68.791664"
+       width="65.76786"
+       y="73.327377"
+       x="98.651787" />
+    <rect
+       id="rect885"
+       height="30.345541"
+       width="91.264565"
+       y="56.318451"
+       x="99.029762" />
+    <rect
+       id="rect1019"
+       height="28.063299"
+       width="95.94976"
+       y="75.848351"
+       x="89.962219" />
+    <rect
+       x="82.586281"
+       y="73.499123"
+       width="33.141422"
+       height="17.773422"
+       id="rect853-66" />
+    <rect
+       x="99.029762"
+       y="56.318451"
+       width="67.14315"
+       height="26.028936"
+       id="rect885-0" />
+  </defs>
+  <sodipodi:namedview
+     inkscape:window-maximized="1"
+     inkscape:window-y="-8"
+     inkscape:window-x="-8"
+     inkscape:window-height="1017"
+     inkscape:window-width="1920"
+     showgrid="false"
+     inkscape:document-rotation="0"
+     inkscape:current-layer="layer1"
+     inkscape:document-units="mm"
+     inkscape:cy="16.854563"
+     inkscape:cx="470.61557"
+     inkscape:zoom="0.98994949"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     borderopacity="1.0"
+     bordercolor="#666666"
+     pagecolor="#ffffff"
+     id="base" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(-7.0766833,-40.533136)"
+     id="layer1"
+     inkscape:groupmode="layer"
+     inkscape:label="Layer 1">
+    <g
+       transform="translate(7.0766833,40.533136)"
+       id="g881">
+      <g
+         transform="translate(-0.26726952,-0.26726952)"
+         inkscape:label="Layer 2"
+         id="layer2">
+        <rect
+           rx="12.000817"
+           y="0.26726952"
+           x="0.26726952"
+           height="76.171814"
+           width="69.757347"
+           id="rect1015"
+           style="fill:#365bd2;fill-opacity:0.160784;stroke-width:0.260136" />
+      </g>
+      <g
+         transform="translate(-10.583168,-67.562992)"
+         id="layer1-9"
+         inkscape:label="Layer 1">
+        <text
+           xml:space="preserve"
+           id="text851-0"
+           style="font-style:normal;font-weight:normal;font-size:7.9375px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect853-66);fill:#1338d3;fill-opacity:1;stroke:none;"
+           transform="matrix(10.067749,0,0,11.629795,-815.40017,-801.32142)"><tspan
+             x="82.585938"
+             y="80.741622"><tspan
+               style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.9375px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold';fill:#1338d3;fill-opacity:1">K</tspan></tspan></text>
+        <text
+           style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect1019);fill:#000000;fill-opacity:1;stroke:none;"
+           id="text1017"
+           xml:space="preserve" />
+      </g>
+    </g>
+    <text
+       transform="matrix(2,0,0,2,-118.1127,-56.807437)"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:21.1667px;line-height:1.25;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';white-space:pre;shape-inside:url(#rect885);fill:#000000;fill-opacity:1;stroke:none;"
+       id="text883"
+       xml:space="preserve"><tspan
+         x="99.029297"
+         y="75.384358"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:21.1667px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Bold'">utlan</tspan></tspan></text>
+    <text
+       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect891);fill:#000000;fill-opacity:1;stroke:none;"
+       id="text889"
+       xml:space="preserve" />
+    <text
+       xml:space="preserve"
+       id="text883-3"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:21.1667px;line-height:1.25;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI';white-space:pre;shape-inside:url(#rect885-0);fill:#1338d3;fill-opacity:1;stroke:none;"
+       transform="matrix(2,0,0,2,-13.894195,-57.054348)"><tspan
+         x="99.029297"
+         y="75.384358"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:21.1667px;font-family:Consolas;-inkscape-font-specification:'Consolas Bold';shape-inside:url(#rect885-0);fill:#1338d3;fill-opacity:1">Coder</tspan></tspan></text>
+  </g>
+</svg>

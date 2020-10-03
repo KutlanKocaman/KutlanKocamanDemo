@@ -6,7 +6,7 @@ export class DocumentTitle extends Component {
     }
 
     componentDidMount() {
-        document.title = "Kutlan Kocaman - " + this.props.documentTitle;
+        document.title = "Kutlan Coder - " + this.props.documentTitle;
     }
 
     render() {
