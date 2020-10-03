@@ -94,6 +94,10 @@ a.navbar-brand {
     margin-top: 0.3em;
 }
 
+.nav-link:hover {
+    background-color: var(--colour-2);
+}
+
 .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
     color: #fff;
     background-color: var(--primary-hover-colour);
