@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Http;
 using JavaScriptEngineSwitcher.V8;
 using JavaScriptEngineSwitcher.Extensions.MsDependencyInjection;
 using React.AspNet;
+using KutlanKocamanDemo.Middleware;
 
 namespace KutlanKocamanDemo
 {
@@ -99,6 +100,8 @@ namespace KutlanKocamanDemo
             app.UseReact(config => {});
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+
+            app.UseMiddleware<RedirectMiddleware>();
 
             app.UseRouting();
 
