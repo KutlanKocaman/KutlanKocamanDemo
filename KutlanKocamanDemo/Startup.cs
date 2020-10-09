@@ -48,7 +48,7 @@ namespace KutlanKocamanDemo
             });
 
             //Email sending.
-            services.AddTransient<IEmailSender, EmailSender>();
+            services.AddTransient<EmailSender>();
             services.Configure<AuthMessageSenderOptions>(Configuration);
 
             //For React.

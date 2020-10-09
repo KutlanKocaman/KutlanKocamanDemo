@@ -100,7 +100,7 @@ namespace KutlanKocamanDemo.Areas.Identity.Pages.Account.Manage
                         throw new Exception();
                     }
                 }
-                catch (Exception exception)
+                catch (Exception)
                 {
                     transaction.Rollback();
                     throw new InvalidOperationException($"Unexpected error occurred deleting user with ID '{userId}'.");
