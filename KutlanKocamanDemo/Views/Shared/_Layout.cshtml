@@ -34,7 +34,7 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row">
-                    <div class="btn-group">
+                    <div class="btn-group navbar-nav">
                         <a href="#" type="button" class="nav-link text-dark" id="contentForAllUsersButton" data-toggle="dropdown">
                             Content for all users
                         </a>
@@ -44,15 +44,18 @@
                     </div>
                     @if (User.Identity.IsAuthenticated)
                     {
-                        <div class="btn-group">
-                            <a href="#" type="button" class="nav-link text-dark" id="contentForAuthUsersButton" data-toggle="dropdown">
-                                Content for authenticated users
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="contentForAuthUsersButton">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Customers" asp-action="Index">Customers (SQL DB CRUD)</a>
-                            </div>
+                    <div class="btn-group navbar-nav">
+                        <a href="#" type="button" class="nav-link text-dark" id="contentForAuthUsersButton" data-toggle="dropdown">
+                            Content for authenticated users
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="contentForAuthUsersButton">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Customers" asp-action="Index">Customers (SQL DB CRUD)</a>
                         </div>
+                    </div>
                     }
+                    <div class="btn-group navbar-nav ml-auto">
+                        <a class="nav-link text-dark navbar-nav" asp-area="" asp-controller="Home" asp-action="About">About</a>
+                    </div>
                     <partial name="_LoginPartial" />
                 </div>
             </div>
