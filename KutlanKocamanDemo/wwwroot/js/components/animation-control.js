@@ -14,7 +14,7 @@ export class AnimationControl extends React.Component {
         this._animationCancellationToken = null;
 
         this.state = {
-            animationIndex: 0,
+            animationCurrent: this.props.animationCurrent,
             animationState: this.props.animationState || 'PLAY',
             animationSpeed: 50
         }
@@ -27,36 +27,36 @@ export class AnimationControl extends React.Component {
 
     doAnimation = () => {
         let newAnimationState = this.state.animationState;
-        let newAnimationIndex = this.state.animationIndex;
+        let newAnimationCurrent = this.state.animationCurrent;
         let timeBetweenAnimationsMs = this.minTimeBetweenAnimationsMs
             + (this.maxTimeBetweenAnimationsMs - this.minTimeBetweenAnimationsMs) * (100 - this.state.animationSpeed) * 0.01;
-
+        
         if (this.state.animationState === 'REPLAY') {
             newAnimationState = 'PLAY';
-            newAnimationIndex = 0;
+            newAnimationCurrent = this.props.animationList.firstNode;
         }
         else if (this.state.animationState === 'PLAY') {
-            if (newAnimationIndex < this.props.animationArray.length) {
+            if (newAnimationCurrent !== null) {
                 //Call the function passed in to do one animation.
                 this.props.doOneAnimation();
-                newAnimationIndex++;
+                newAnimationCurrent = newAnimationCurrent.next;
             }
         }
         else if (this.state.animationState === 'SKIP') {
             //Call the function passed in to do all remaining animations.
             this.props.doRemainingAnimations();
-            newAnimationIndex = this.props.animationArray.length;
+            newAnimationCurrent = null;
         }
 
         //If we have reached the end of the animation queue then stop the polling.
-        if (newAnimationIndex >= this.props.animationArray.length) {
+        if (newAnimationCurrent === null) {
             newAnimationState = 'STOP'
         }
 
         //Set the state now that the latest animation has been applied.
         this.setState({
             animationState: newAnimationState,
-            animationIndex: newAnimationIndex
+            animationCurrent: newAnimationCurrent
         }, () => {
             //Set the timeout for the next queue poll if the animationState isn't stopped.
             if (this.state.animationState !== 'STOP') {
@@ -73,9 +73,9 @@ export class AnimationControl extends React.Component {
 
         //Then do the function passed in to start a new animation.
         this.props.startNewAnimation(() => {
-            //Then set the animation index to 0 and PLAY.
+            //Reset to the first animation and PLAY.
             this.setState({
-                animationIndex: 0,
+                animationCurrent: this.props.animationList.firstNode,
                 animationState: 'PLAY'
             }, () => {
                 //Finally start the animation process.
@@ -121,16 +121,6 @@ export class AnimationControl extends React.Component {
                 this.doAnimation();
             });
         });
-    }
-
-    isAnimationRunning = () => {
-        if (this.props.animationArray.length > 0
-            && this.state.animationIndex < this.props.animationArray.length) {
-            return true;
-        }
-        else {
-            return false;
-        }
     }
 
     changeAnimationSpeed = (event) => {

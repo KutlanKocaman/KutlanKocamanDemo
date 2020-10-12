@@ -16,6 +16,11 @@ export class GraphEditer extends React.Component {
         };
     }
 
+    componentWillUnmount() {
+        //Cancel the created node popover close timeout.
+        clearTimeout(this.createdNodeTimeoutToken);
+    }
+
     createNodeClickHandler = () => {
         //Clear any existing timeout for the created node popover, then create a new timeout.
         clearTimeout(this.createdNodeTimeoutToken);

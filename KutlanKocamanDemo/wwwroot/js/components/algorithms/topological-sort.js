@@ -8,12 +8,13 @@ import { createDeepCopy } from "../../shared/functions";
 import { AnimationControl } from '../animation-control';
 import { GraphEditer } from '../graph-editer';
 import { ModalInformational } from "../modal-info";
+import { LinkedList } from "../../shared/linked-list";
 
 export class TopologicalSort extends React.Component {
     constructor(props) {
         super(props);
 
-        this.animationArray = [];
+        this.animationList = new LinkedList();
         this.maxNodes = 100;
 
         //Set up the example graph.
@@ -89,15 +90,15 @@ export class TopologicalSort extends React.Component {
             isEdgeBeingCreated: false,
             isEdgeBeingDeleted: false,
             newEdgeNodes: [],
-            animationArray: [],
-            animationIndex: 0,
+            animationList: new LinkedList(),
+            animationCurrent: null,
             isAnimationInSync: false,
             algorithmResult: 'Result: '
         }
     }
 
 /***********************************************************
-Do the topological sort and fill the animationArray field (not state).
+Do the topological sort and fill the animationList field (not state).
 ***********************************************************/
 
     topologicalSort = () => {
@@ -146,7 +147,7 @@ Do the topological sort and fill the animationArray field (not state).
             output.push(removedNodeValue);
 
             //Push the animation to show the node being removed.
-            this.animationArray.push({
+            this.animationList.addLast({
                 type: 'nodes',
                 nodeValue: removedNodeValue,
                 state: 'FADED'
@@ -158,7 +159,7 @@ Do the topological sort and fill the animationArray field (not state).
             }
 
             //Push the animation to show the edges coming from the removed node also being removed.
-            this.animationArray.push({
+            this.animationList.addLast({
                 type: 'edges',
                 nodeValue: removedNodeValue,
                 state: 'FADED'
@@ -177,7 +178,7 @@ Do the topological sort and fill the animationArray field (not state).
         }
         if (output.length !== nodeKeys.length) {
             //There is a cycle
-            this.animationArray.push({
+            this.animationList.addLast({
                 type: 'nodes',
                 nodeValue: 'can\'t complete - there is a cycle!'
             });
@@ -468,17 +469,17 @@ Start a new animation.
 ************************************************************/
 
     startNewAnimation = (callback) => {
-        this.animationArray = [];
+        this.animationList = new LinkedList();
 
         const resetResult = this.resetAnimationStates();
 
-        //Fill this.animation array.
+        //Fill this.animation list.
         this.topologicalSort();
         
-        //Set the animation array state to trigger a re-render.
+        //Set the animation list state to trigger a re-render.
         this.setState({
-            animationArray: this.animationArray,
-            animationIndex: 0,
+            animationList: this.animationList,
+            animationCurrent: this.animationList.firstNode,
             nodes: resetResult.nodes,
             edges: resetResult.edges,
             algorithmResult: resetResult.algorithmResult,
@@ -499,7 +500,7 @@ Do the next animation in the array.
 ***********************************************************/
 
     doOneAnimation = () => {
-        const animation = this.state.animationArray[this.state.animationIndex];
+        const animation = this.state.animationCurrent.val;
         
         if (animation.type === 'nodes') {
             const newNodes = createDeepCopy(this.state.nodes);
@@ -543,9 +544,9 @@ Do the next animation in the array.
             newResult.concat(animation.nodeValue);
         }
 
-        //Increment the animation index.
+        //Move to the next animation.
         this.setState((state) => {
-            return { animationIndex: state.animationIndex + 1 }
+            return { animationCurrent: state.animationCurrent.next }
         });
     }
 
@@ -554,14 +555,14 @@ Do all the remaining animations in the array.
 ***********************************************************/
 
     doRemainingAnimations = () => {
-        let newAnimationIndex = this.state.animationIndex;
+        let newAnimationCurrent = this.state.animationCurrent;
         const newNodes = createDeepCopy(this.state.nodes);
         let newResult = createDeepCopy(this.state.algorithmResult);
         let newEdges = createDeepCopy(this.state.edges);
 
         //Loop through the remaining animations
-        while (newAnimationIndex < this.state.animationArray.length) {
-            const animation = this.state.animationArray[newAnimationIndex];
+        while (newAnimationCurrent !== null) {
+            const animation = newAnimationCurrent.val;
             if (animation.type === 'nodes') {
                 //Change the node state to that given in the animation.
                 if (newNodes.hasOwnProperty(animation.nodeValue)) {
@@ -588,11 +589,11 @@ Do all the remaining animations in the array.
                     }
                 }
             }
-            newAnimationIndex++;
+            newAnimationCurrent = newAnimationCurrent.next;
         }
 
         this.setState({
-            animationIndex: newAnimationIndex,
+            animationCurrent: newAnimationCurrent,
             nodes: newNodes,
             edges: newEdges
         });
@@ -606,7 +607,7 @@ Replay the animation from the start.
         const resetResult = this.resetAnimationStates();
 
         this.setState({
-            animationIndex: 0,
+            animationCurrent: this.state.animationList.firstNode,
             nodes: resetResult.nodes,
             edges: resetResult.edges,
             algorithmResult: resetResult.algorithmResult
@@ -642,20 +643,6 @@ Reset the animation states ready for a new animation to start.
             nodes: newNodes,
             edges: newEdges,
             algorithmResult: 'Result: '
-        }
-    }
-
-/***********************************************************
-Check if the animation is still running.
-***********************************************************/
-
-    isAnimationRunning = () => {
-        if (this.state.animationArray.length > 0
-            && this.state.animationIndex < this.state.animationArray.length) {
-            return true;
-        }
-        else {
-            return false;
         }
     }
 
@@ -713,8 +700,8 @@ React Render Method
                     />
                     <br />
                     <AnimationControl
-                        animationArray={this.state.animationArray}
-                        animationIndex={this.state.animationIndex}
+                        animationList={this.state.animationList}
+                        animationCurrent={this.state.animationCurrent}
                         startNewAnimation={this.startNewAnimation}
                         doOneAnimation={this.doOneAnimation}
                         doRemainingAnimations={this.doRemainingAnimations}
@@ -730,7 +717,7 @@ React Render Method
                         isEdgeBeingDeleted={this.state.isEdgeBeingDeleted}
                         createNode={this.createNode}
                         clickCreateEdge={this.clickCreateEdge}
-                        isAnimationRunning={this.isAnimationRunning()}
+                        isAnimationRunning={this.state.animationCurrent !== null}
                     />
                     <br />
                 </Col>

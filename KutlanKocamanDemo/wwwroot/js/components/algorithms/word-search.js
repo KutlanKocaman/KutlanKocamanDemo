@@ -5,6 +5,7 @@ import TrieNode from "../../shared/trie-node";
 import { createMultiDimensionalArray, createDeepCopy, randomBetweenInclusive } from "../../shared/functions";
 import { ModalInformational } from "../modal-info";
 import { AnimationControl } from '../animation-control';
+import { LinkedList } from '../../shared/linked-list';
 
 import '../../../css/word-search.css'
 
@@ -24,7 +25,7 @@ class WordSearch extends React.Component {
         }
 
         this.maxWords = 20;
-        this.animationArray = [];
+        this.animationList = new LinkedList();
 
         this.state = {
             characters: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
@@ -54,8 +55,8 @@ class WordSearch extends React.Component {
             columnCount: cols,
             maxRows: 20,
             grid: grid,
-            animationArray: [],
-            animationIndex: 0,
+            animationList: null,
+            animationCurrent: null,
             animationState: 'PLAY',
             animationCancellationToken: null,
             animationSpeed: 100
@@ -339,7 +340,7 @@ Find the words on the grid.
                     usedCells.add(cellIndex);
 
                     //Queue the animation to show we matched a letter.
-                    this.animationArray.push({
+                    this.animationList.addLast({
                         type: 'grid',
                         row: i,
                         column: j,
@@ -353,7 +354,7 @@ Find the words on the grid.
                 }
                 else {
                     //Queue the animation to show we didn't match a letter.
-                    this.animationArray.push({
+                    this.animationList.addLast({
                         type: 'grid',
                         row: i,
                         column: j,
@@ -366,7 +367,7 @@ Find the words on the grid.
                     grid[i][j].state = 'FOUND';
 
                     //Queue the animation.
-                    this.animationArray.push({
+                    this.animationList.addLast({
                         type: 'grid',
                         row: i,
                         column: j,
@@ -387,7 +388,7 @@ Find the words on the grid.
                     grid[i][j].state = originalCellState;
 
                     //Queue the animation.
-                    this.animationArray.push({
+                    this.animationList.addLast({
                         type: 'grid',
                         row: i,
                         column: j,
@@ -418,12 +419,12 @@ Recursion method to find the next letter in a word.
                         words[i].cells = createDeepCopy(usedCells);
 
                         //Queue the animation to visually show the word as FOUND.
-                        this.animationArray.push({
+                        this.animationList.addLast({
                             type: 'words',
                             word: curNode.Word,
                             state: 'SHOW'
                         });
-                        this.animationArray.push({
+                        this.animationList.addLast({
                             type: 'words',
                             word: curNode.Word,
                             state: 'FOUND'
@@ -468,7 +469,7 @@ Recursion method to find the next letter in a word.
                     usedCells.add(cellIndex);
 
                     //Queue the animation to show that we have matched a letter in this cell.
-                    this.animationArray.push({
+                    this.animationList.addLast({
                         type: 'grid',
                         row: newRow,
                         column: newCol,
@@ -488,7 +489,7 @@ Recursion method to find the next letter in a word.
                         foundWord = true;
 
                         //Queue the animation.
-                        this.animationArray.push({
+                        this.animationList.addLast({
                             type: 'grid',
                             row: newRow,
                             column: newCol,
@@ -505,7 +506,7 @@ Recursion method to find the next letter in a word.
                         grid[newRow][newCol].state = originalCellState;
 
                         //Queue the animation to return the call back to its original state.
-                        this.animationArray.push({
+                        this.animationList.addLast({
                             type: 'grid',
                             row: newRow,
                             column: newCol,
@@ -519,14 +520,14 @@ Recursion method to find the next letter in a word.
                     grid[newRow][newCol].state = originalCellState;
 
                     //Show the mismsatch...
-                    this.animationArray.push({
+                    this.animationList.addLast({
                         type: 'grid',
                         row: newRow,
                         column: newCol,
                         state: 'MISMATCH'
                     });
                     //Then return the cell to its original state.
-                    this.animationArray.push({
+                    this.animationList.addLast({
                         type: 'grid',
                         row: newRow,
                         column: newCol,
@@ -558,7 +559,7 @@ Start a new animation.
 ***********************************************************/
 
     startNewAnimation = (callback) => {
-        this.animationArray = [];
+        this.animationList = new LinkedList();
 
         let words = this.resetAndCleanWords();
 
@@ -569,14 +570,14 @@ Start a new animation.
 
         let grid = this.populateGrid(words);
 
-        //Find the words - fill this.animationArray. Pass a deep copy of grid, so that we don't change the state.
+        //Find the words - fill this.animationList. Pass a deep copy of grid, so that we don't change the state.
         //Only the animation should change the state.
         this.wordSearch(words, createDeepCopy(grid));
 
         //Set the animation array state to trigger a re-render.
         this.setState({
-            animationArray: this.animationArray,
-            animationIndex: 0,
+            animationList: this.animationList,
+            animationCurrent: this.animationList.firstNode,
             grid: grid,
             words: words,
             wordsAndGridInSync: true
@@ -593,7 +594,7 @@ Do the next animation in the array.
 ***********************************************************/
 
     doOneAnimation = () => {
-        const animation = this.state.animationArray[this.state.animationIndex];
+        const animation = this.state.animationCurrent.val;
 
         if (animation.type === 'grid') {
             const newGrid = createDeepCopy(this.state.grid);
@@ -622,7 +623,7 @@ Do the next animation in the array.
         
         //Increment the animation index.
         this.setState((state) => {
-            return { animationIndex: state.animationIndex + 1 }
+            return { animationCurrent: state.animationCurrent.next }
         });
     }
 
@@ -631,13 +632,13 @@ Do all the remaining animations in the array.
 ***********************************************************/
 
     doRemainingAnimations = () => {
-        let newAnimationIndex = this.state.animationIndex;
+        let newAnimationCurrent = this.state.animationCurrent;
         const newGrid = createDeepCopy(this.state.grid);
         const newWords = createDeepCopy(this.state.words);
 
         //Loop through the remaining animations
-        while (newAnimationIndex < this.state.animationArray.length) {
-            const animation = this.state.animationArray[newAnimationIndex];
+        while (newAnimationCurrent !== null) {
+            const animation = newAnimationCurrent.val;
 
             if (animation.type === 'grid') {
                 //Change the state of the grid cell specified in the animation.
@@ -651,11 +652,11 @@ Do all the remaining animations in the array.
                     }
                 }
             };
-            newAnimationIndex++;
+            newAnimationCurrent = newAnimationCurrent.next;
         }
 
         this.setState({
-            animationIndex: newAnimationIndex,
+            animationCurrent: newAnimationCurrent,
             grid: newGrid,
             words: newWords
         });
@@ -681,7 +682,7 @@ Replay the animation from the start.
         }
 
         this.setState({
-            animationIndex: 0,
+            animationCurrent: this.state.animationList.firstNode,
             grid: newGrid,
             words: newWords
         }, () => {
@@ -690,20 +691,6 @@ Replay the animation from the start.
                 callback();
             }
         });
-    }
-
-/***********************************************************
-Check if the animation is still running.
-***********************************************************/
-
-    isAnimationRunning = () => {
-        if (this.state.animationArray.length > 0
-            && this.state.animationIndex < this.state.animationArray.length) {
-            return true;
-        }
-        else {
-            return false;
-        }
     }
 
 /***********************************************************
@@ -828,8 +815,7 @@ Returns the class of a show me button.
         //If there is no animation yet (because the search hasn't been run),
         //or the animation is still playing,
         //or the words and grid are not in sync
-        if (this.state.animationArray.length === 0
-            || this.state.animationIndex < this.state.animationArray.length
+        if (this.state.animationCurrent !== null
             || this.state.wordsAndGridInSync !== true) {
             //Hide the Show Me buttons.
             return "hidden";
@@ -851,7 +837,7 @@ Decides whether the add word button should be disabled.
 ***********************************************************/
 
     shouldAddWordBeDisabled = () => {
-        if (this.isAnimationRunning()
+        if (this.state.animationCurrent !== null
             || this.state.words.length >= this.maxWords) {
             return true;
         }
@@ -872,7 +858,7 @@ Create and return the word list elements.
                     key={index}>
                     <input
                         className={this.getWordInputClass(word)}
-                        readOnly={this.isAnimationRunning()}
+                        readOnly={this.state.animationCurrent !== null}
                         maxLength="13"
                         value={word.word}
                         onKeyDown={(event) => {
@@ -888,7 +874,7 @@ Create and return the word list elements.
                     <button
                         title="Remove this word"
                         className="btn btn-danger remove-word-button"
-                        disabled={this.isAnimationRunning()}
+                        disabled={this.state.animationCurrent !== null}
                         onClick={() => this.deleteWord(index)}
                     >-</button>
                     <button
@@ -1004,8 +990,8 @@ React Render Method.
                 </Col>
                 <Col lg='6'>
                     <AnimationControl
-                        animationArray={this.state.animationArray}
-                        animationIndex={this.state.animationIndex}
+                        animationList={this.state.animationList}
+                        animationCurrent={this.state.animationCurrent}
                         startNewAnimation={this.startNewAnimation}
                         doOneAnimation={this.doOneAnimation}
                         doRemainingAnimations={this.doRemainingAnimations}
@@ -1018,7 +1004,7 @@ React Render Method.
                     <label>How Many Rows and Columns?</label>
                     <input
                         className="form-control row-count-input"
-                        readOnly={this.isAnimationRunning()}
+                        readOnly={this.animationCurrent === null}
                         maxLength="2"
                         value={this.state.rowCount}
                         onKeyDown={(event) => {
