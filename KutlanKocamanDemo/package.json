@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "react-router-dom": "^5.2.0",
+    "react-router-ga": "^1.2.3",
     "reactstrap": "^8.5.1"
   }
 }
