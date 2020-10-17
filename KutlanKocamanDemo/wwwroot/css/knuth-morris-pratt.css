@@ -1,0 +1,31 @@
+﻿.kmp-header-label {
+    font-weight: bold;
+}
+
+.kmp-found-indexes-container {
+    min-height: 2.6em;
+}
+
+.kmp-found-index-button {
+    margin-right: 0.2em;
+    margin-bottom: 0.2em;
+}
+
+.kmp-grid-cell {
+    border: solid black 2px;
+    height: 2em;
+    width: 2em;
+    text-align: center;
+}
+
+.kmp-text-partfound {
+    background-color: orange;
+}
+
+.kmp-text-found {
+    background-color: lime;
+}
+
+.kmp-text-mismatch {
+    background-color: red;
+}

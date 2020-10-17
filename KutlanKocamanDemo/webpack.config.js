@@ -1,7 +1,7 @@
 ﻿const path = require('path');
 
 module.exports = {
-    mode: 'production', //development or production
+    mode: 'development', //development or production
     entry: { //Entry point for the webpack to start bundling.
         spa: './wwwroot/js/spa.js'
     },

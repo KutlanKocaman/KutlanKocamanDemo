@@ -26,6 +26,9 @@ export class NavMenu extends Component {
                     Single Page App Menu
                 </DropdownToggle>
                 <DropdownMenu>
+                    <DropdownItem tag={Link} to="/KnuthMorrisPratt">
+                        Knuth-Morris-Pratt String Search Animation
+                    </DropdownItem>
                     <DropdownItem tag={Link} to="/TopologicalSort">
                         Topological Sort Animation
                     </DropdownItem>
