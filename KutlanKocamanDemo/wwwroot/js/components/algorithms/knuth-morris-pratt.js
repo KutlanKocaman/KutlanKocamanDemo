@@ -21,6 +21,7 @@ export class KnuthMorrisPratt extends React.Component {
             foundIndexes: [],
             needleRangeToHighlight: {start: 0, end: 0, type: 'NONE'},
             haystackRangesToHighlight: [],
+            showRange: null,
             animationList: null,
             animationCurrent: null,
             isAnimationInSync: false
@@ -141,6 +142,7 @@ export class KnuthMorrisPratt extends React.Component {
             haystackRangesToHighlight: resetAnimationStates.haystackRangesToHighlight,
             needleRangeToHighlight: resetAnimationStates.needleRangeToHighlight,
             foundIndexes: resetAnimationStates.foundIndexes,
+            showRange: null,
             animationList: this.animationList,
             animationCurrent: this.animationList.firstNode,
             isAnimationInSync: true
@@ -170,15 +172,27 @@ export class KnuthMorrisPratt extends React.Component {
                 needleRangeToHighlight.type = 'PARTFOUND';
             }
             else if (animation.state === 'FOUND') {
-                //Highlight from the saved start index to the animation "end" position.
-                haystackRangesToHighlight[haystackRangesToHighlight.length - 1].end = animation.haystackPosition;
-                haystackRangesToHighlight[haystackRangesToHighlight.length - 1].type = 'FOUND';
+                //If the previous highlight range is FOUND, and this FOUND index is equal to the end of that range then merge the two.
+                if (haystackRangesToHighlight.length > 1
+                    && haystackRangesToHighlight[haystackRangesToHighlight.length - 2].type === 'FOUND'
+                    && haystackRangesToHighlight[haystackRangesToHighlight.length - 2].end === haystackRangesToHighlight[haystackRangesToHighlight.length - 1].start) {
+                    //Amend the previous FOUND highlight range with the new end position.
+                    haystackRangesToHighlight[haystackRangesToHighlight.length - 2].end = animation.haystackPosition;
 
-                //Push this found highlight to the array so that the found string stays highlighted in the haystack output.
-                haystackRangesToHighlight.push({
-                    start: animation.haystackPosition,
-                    type: 'NONE'
-                });
+                    //Amend the start of the latest highlight range.
+                    haystackRangesToHighlight[haystackRangesToHighlight.length - 1].start = animation.haystackPosition;
+                    haystackRangesToHighlight[haystackRangesToHighlight.length - 1].type = 'NONE';
+                }
+                else {
+                    haystackRangesToHighlight[haystackRangesToHighlight.length - 1].end = animation.haystackPosition;
+                    haystackRangesToHighlight[haystackRangesToHighlight.length - 1].type = 'FOUND';
+
+                    //Push this found highlight to the array so that the found string stays highlighted in the haystack output.
+                    haystackRangesToHighlight.push({
+                        start: animation.haystackPosition,
+                        type: 'NONE'
+                    });
+                }
 
                 //Add an index to the found indexes
                 foundIndexes.push({
@@ -244,7 +258,8 @@ export class KnuthMorrisPratt extends React.Component {
             animationCurrent: this.state.animationList.firstNode,
             haystackRangesToHighlight: resetAnimationStates.haystackRangesToHighlight,
             needleRangeToHighlight: resetAnimationStates.needleRangeToHighlight,
-            foundIndexes: resetAnimationStates.foundIndexes
+            foundIndexes: resetAnimationStates.foundIndexes,
+            showRange: null
         }, () => {
             //Do the callback if one is provided.
             if (callback) {
@@ -265,8 +280,6 @@ export class KnuthMorrisPratt extends React.Component {
             end: 0,
             type: 'NONE'
         };
-
-
 
         return {
             haystackRangesToHighlight: haystackRangesToHighlight,
@@ -378,7 +391,8 @@ export class KnuthMorrisPratt extends React.Component {
             <Button
                 color='primary'
                 key={index.toString()}
-                className='kmp-found-index-button'
+                className={this.getFoundIndexClass(value.index)}
+                onClick={() => this.onFoundIndexClick(event)}
             >{value.index}</Button>
         );
 
@@ -389,12 +403,95 @@ export class KnuthMorrisPratt extends React.Component {
         )
     }
 
+    getFoundIndexClass = (foundIndexValue) => {
+        if (this.state.showRange !== null && this.state.showRange.start == foundIndexValue) {
+            return 'kmp-found-index-button kmp-text-show';
+        }
+        return 'kmp-found-index-button';
+    }
+
+    onFoundIndexClick = (event) => {
+        let showRange = createDeepCopy(this.state.showRange);
+        const index = parseInt(event.target.innerText);
+
+        //Set showRange to start at this index, if it is not already at this index.
+        if (showRange === null || showRange.start !== index) {
+            showRange = {
+                start: index,
+                end: index + this.state.needle.length
+            };
+        }
+        //If showRange is already at this index, then unset it and therefore remove the FOUND highlighting.
+        else {
+            showRange = null;
+        }
+
+        this.setState({
+            showRange: showRange
+        });
+    }
+
     renderHaystack = () => {
         let haystack = this.state.haystack;
 
-        const haystackRangesToHighlight = this.state.haystackRangesToHighlight;
+        const haystackRangesToHighlight = createDeepCopy(this.state.haystackRangesToHighlight);
+        const showRange = this.state.showRange;
         let highlightsIndex = 0;
 
+        //If there is a range to SHOW, then merge this into the ranges to highlight, giving SHOW priority.
+        if (showRange !== null) {
+            //Find the range which the SHOW range sits within - it must sit within a FOUND range.
+            for (let i = 0; i < haystackRangesToHighlight.length; i++) {
+                if (showRange.start >= haystackRangesToHighlight[i].start
+                    && showRange.end <= haystackRangesToHighlight[i].end) {
+                    //Add the SHOW range into the existing range.
+                    if (showRange.start === haystackRangesToHighlight[i].start) {
+                        if (showRange.end === haystackRangesToHighlight[i].end) {
+                            haystackRangesToHighlight[i].type = 'SHOW';
+                        }
+                        //showRange.end < haystackRangesToHighlight[i].end
+                        else {
+                            haystackRangesToHighlight.splice(i + 1, 0, {
+                                type: haystackRangesToHighlight[i].type,
+                                start: showRange.end,
+                                end: haystackRangesToHighlight[i].end
+                            });
+                            haystackRangesToHighlight[i].type = 'SHOW';
+                            haystackRangesToHighlight[i].end = showRange.end;
+                        }
+                    }
+                    //showRange.start > haystackRangesToHighlight[i].start
+                    else {
+                        if (showRange.end === haystackRangesToHighlight[i].end) {
+                            haystackRangesToHighlight[i].end = showRange.start;
+                            haystackRangesToHighlight.splice(i + 1, 0, {
+                                type: 'SHOW',
+                                start: showRange.start,
+                                end: showRange.end
+                            });
+                        }
+                        //showRange.end < haystackRangesToHighlight[i].end
+                        else {
+                            const end = haystackRangesToHighlight[i].end;
+                            haystackRangesToHighlight[i].end = showRange.start;
+
+                            haystackRangesToHighlight.splice(i + 1, 0, {
+                                type: 'SHOW',
+                                start: showRange.start,
+                                end: showRange.end
+                            }, {
+                                type: haystackRangesToHighlight[i].type,
+                                start: showRange.end,
+                                end: end
+                            });
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+
+        //Move throught the haystack highlighting the appropriate ranges.
         const haystackWithHighlighting = [];
         let haystackPosition = 0;
         while (haystackPosition < haystack.length) {
@@ -424,12 +521,12 @@ export class KnuthMorrisPratt extends React.Component {
                 highlightsIndex++;
             }
         }
-        
+
         return (
             <div>{haystackWithHighlighting}</div>
         );
     }
-
+    
     getHaystackHighglightClass = (highlightType) => {
         if (highlightType === 'PARTFOUND') {
             return 'kmp-text-partfound';
@@ -439,6 +536,9 @@ export class KnuthMorrisPratt extends React.Component {
         }
         else if (highlightType === 'MISMATCH') {
             return 'kmp-text-mismatch';
+        }
+        else if (highlightType === 'SHOW') {
+            return 'kmp-text-show';
         }
     }
 

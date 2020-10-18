@@ -29,3 +29,8 @@
 .kmp-text-mismatch {
     background-color: red;
 }
+
+.kmp-text-show {
+    background-color: yellow;
+    color: black;
+}
