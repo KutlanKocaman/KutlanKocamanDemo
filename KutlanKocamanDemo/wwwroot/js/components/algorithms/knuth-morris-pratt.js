@@ -95,13 +95,7 @@ export class KnuthMorrisPratt extends React.Component {
                     type: 'SEARCH',
                     haystackPosition: j,
                     needlePosition: k,
-                    state: 'MISMATCH-ON'
-                });
-                this.animationList.addLast({
-                    type: 'SEARCH',
-                    haystackPosition: j,
-                    needlePosition: k,
-                    state: 'MISMATCH-OFF'
+                    state: 'MISMATCH'
                 });
 
                 k = kmpTable[1][k];
@@ -156,90 +150,96 @@ export class KnuthMorrisPratt extends React.Component {
 
     doOneAnimation = () => {
         const animation = this.state.animationCurrent.val;
+        
+        const haystackRangesToHighlight = createDeepCopy(this.state.haystackRangesToHighlight);
+        const needleRangeToHighlight = createDeepCopy(this.state.needleRangeToHighlight);
+        const foundIndexes = createDeepCopy(this.state.foundIndexes);
 
-        if (animation.type === 'SEARCH') {
-            const haystackRangesToHighlight = createDeepCopy(this.state.haystackRangesToHighlight);
-            const needleRangeToHighlight = createDeepCopy(this.state.needleRangeToHighlight);
-            const foundIndexes = createDeepCopy(this.state.foundIndexes);
+        //If the last highlight was a mismatch, clear it away before doing the next animation.
+        if (haystackRangesToHighlight[haystackRangesToHighlight.length - 1].type === 'MISMATCH') {
+            const nextPosition = haystackRangesToHighlight[haystackRangesToHighlight.length - 1].end;
+            haystackRangesToHighlight.pop();
 
-            if (animation.state === 'PARTFOUND') {
-                //Highlight from the saved start index to the animation position.
+            haystackRangesToHighlight.push({
+                start: nextPosition,
+                end: nextPosition,
+                type: 'NONE'
+            });
+
+            needleRangeToHighlight.start = 0;
+            needleRangeToHighlight.type = 'NONE';
+        }
+        
+        if (animation.state === 'PARTFOUND') {
+            //Highlight from the saved start index to the animation position.
+            haystackRangesToHighlight[haystackRangesToHighlight.length - 1].end = animation.haystackPosition;
+            haystackRangesToHighlight[haystackRangesToHighlight.length - 1].type = 'PARTFOUND';
+
+            //Highlight the relevant part of the needle as part found.
+            needleRangeToHighlight.end = animation.needlePosition;
+            needleRangeToHighlight.type = 'PARTFOUND';
+        }
+        else if (animation.state === 'FOUND') {
+            //If the previous highlight range is FOUND, and this FOUND index is equal to the end of that range then merge the two.
+            if (haystackRangesToHighlight.length > 1
+                && haystackRangesToHighlight[haystackRangesToHighlight.length - 2].type === 'FOUND'
+                && haystackRangesToHighlight[haystackRangesToHighlight.length - 2].end === haystackRangesToHighlight[haystackRangesToHighlight.length - 1].start) {
+                //Amend the previous FOUND highlight range with the new end position.
+                haystackRangesToHighlight[haystackRangesToHighlight.length - 2].end = animation.haystackPosition;
+
+                //Amend the start of the latest highlight range.
+                haystackRangesToHighlight[haystackRangesToHighlight.length - 1].start = animation.haystackPosition;
+                haystackRangesToHighlight[haystackRangesToHighlight.length - 1].type = 'NONE';
+            }
+            else {
                 haystackRangesToHighlight[haystackRangesToHighlight.length - 1].end = animation.haystackPosition;
-                haystackRangesToHighlight[haystackRangesToHighlight.length - 1].type = 'PARTFOUND';
+                haystackRangesToHighlight[haystackRangesToHighlight.length - 1].type = 'FOUND';
 
-                //Highlight the relevant part of the needle as part found.
-                needleRangeToHighlight.end = animation.needlePosition;
-                needleRangeToHighlight.type = 'PARTFOUND';
-            }
-            else if (animation.state === 'FOUND') {
-                //If the previous highlight range is FOUND, and this FOUND index is equal to the end of that range then merge the two.
-                if (haystackRangesToHighlight.length > 1
-                    && haystackRangesToHighlight[haystackRangesToHighlight.length - 2].type === 'FOUND'
-                    && haystackRangesToHighlight[haystackRangesToHighlight.length - 2].end === haystackRangesToHighlight[haystackRangesToHighlight.length - 1].start) {
-                    //Amend the previous FOUND highlight range with the new end position.
-                    haystackRangesToHighlight[haystackRangesToHighlight.length - 2].end = animation.haystackPosition;
-
-                    //Amend the start of the latest highlight range.
-                    haystackRangesToHighlight[haystackRangesToHighlight.length - 1].start = animation.haystackPosition;
-                    haystackRangesToHighlight[haystackRangesToHighlight.length - 1].type = 'NONE';
-                }
-                else {
-                    haystackRangesToHighlight[haystackRangesToHighlight.length - 1].end = animation.haystackPosition;
-                    haystackRangesToHighlight[haystackRangesToHighlight.length - 1].type = 'FOUND';
-
-                    //Push this found highlight to the array so that the found string stays highlighted in the haystack output.
-                    haystackRangesToHighlight.push({
-                        start: animation.haystackPosition,
-                        type: 'NONE'
-                    });
-                }
-
-                //Add an index to the found indexes
-                foundIndexes.push({
-                    index: animation.haystackPosition - animation.needlePosition
-                });
-
-                //Highlight the needle as found.
-                needleRangeToHighlight.end = animation.needlePosition;
-                needleRangeToHighlight.type = 'FOUND';
-            }
-            else if (animation.state === 'MISMATCH-ON') {
-                haystackRangesToHighlight.pop();
-
+                //Push this found highlight to the array so that the found string stays highlighted in the haystack output.
                 haystackRangesToHighlight.push({
                     start: animation.haystackPosition,
-                    end: animation.haystackPosition + 1,
-                    type: 'MISMATCH'
-                });
-                needleRangeToHighlight.start = animation.needlePosition;
-                needleRangeToHighlight.end = animation.needlePosition + 1;
-                needleRangeToHighlight.type = 'MISMATCH';
-            }
-            else if (animation.state === 'MISMATCH-OFF') {
-                const nextPosition = haystackRangesToHighlight[haystackRangesToHighlight.length - 1].end;
-                haystackRangesToHighlight.pop();
-                haystackRangesToHighlight.push({
-                    start: nextPosition,
-                    end: nextPosition,
                     type: 'NONE'
                 });
-                needleRangeToHighlight.start = 0;
-                needleRangeToHighlight.end = animation.needlePosition;
-                needleRangeToHighlight.type = 'NONE';
-            }
-            else if (animation.state === 'END') {
-                //Un-highlight everything in the KMP table when the animation is done.
-                needleRangeToHighlight.start = 0;
-                needleRangeToHighlight.end = 0
-                needleRangeToHighlight.type = 'NONE';
             }
 
-            this.setState({
-                haystackRangesToHighlight: haystackRangesToHighlight,
-                needleRangeToHighlight: needleRangeToHighlight,
-                foundIndexes: foundIndexes
+            //Add an index to the found indexes
+            foundIndexes.push({
+                index: animation.haystackPosition - animation.needlePosition
             });
+
+            //Highlight the needle as found.
+            needleRangeToHighlight.end = animation.needlePosition;
+            needleRangeToHighlight.type = 'FOUND';
         }
+        else if (animation.state === 'MISMATCH') {
+            haystackRangesToHighlight.pop();
+
+            haystackRangesToHighlight.push({
+                start: animation.haystackPosition,
+                end: animation.haystackPosition + 1,
+                type: 'MISMATCH'
+            });
+            needleRangeToHighlight.start = animation.needlePosition;
+            needleRangeToHighlight.end = animation.needlePosition + 1;
+            needleRangeToHighlight.type = 'MISMATCH';
+        }
+        else if (animation.state === 'END') {
+            //If the last haystack highlight in the array is PARTFOUND, then clear it from the array now that the animation is done.
+            if (haystackRangesToHighlight[haystackRangesToHighlight.length - 1].type === 'PARTFOUND') {
+                haystackRangesToHighlight.pop();
+            }
+
+            //Un-highlight everything in the KMP table when the animation is done.
+            needleRangeToHighlight.start = 0;
+            needleRangeToHighlight.end = 0
+            needleRangeToHighlight.type = 'NONE';
+        }
+
+        this.setState({
+            haystackRangesToHighlight: haystackRangesToHighlight,
+            needleRangeToHighlight: needleRangeToHighlight,
+            foundIndexes: foundIndexes
+        });
 
         //Move to the next animation.
         this.setState((state) => {
@@ -437,7 +437,7 @@ export class KnuthMorrisPratt extends React.Component {
         const haystackRangesToHighlight = createDeepCopy(this.state.haystackRangesToHighlight);
         const showRange = this.state.showRange;
         let highlightsIndex = 0;
-
+        
         //If there is a range to SHOW, then merge this into the ranges to highlight, giving SHOW priority.
         if (showRange !== null) {
             //Find the range which the SHOW range sits within - it must sit within a FOUND range.
