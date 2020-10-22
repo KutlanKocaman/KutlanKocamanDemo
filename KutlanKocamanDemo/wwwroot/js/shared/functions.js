@@ -55,3 +55,35 @@ export function createDeepCopy(input) {
 export function randomBetweenInclusive(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
+
+/**
+ * Sets the given query string parameter value.
+ * @param {any} name The name of the query string parameter to set.
+ * @param {any} value The value to set the query string parameter to.
+ */
+export function setQueryStringParameter(name, value) {
+    const params = new URLSearchParams(window.location.search);
+    params.set(name, value);
+    window.history.replaceState({}, "", `${window.location.pathname}?${params}`);
+}
+
+/**
+ * Gets the given query string parameter value.
+ * @param {any} name The name of the query string parameter to get.
+ */
+export function getQueryStringParameter(name) {
+    return new URLSearchParams(window.location.search).get(name);
+}
+
+/**
+ * Copied the given text to the clipboard.
+ * @param {any} text The text to be copied to the clipboard.
+ */
+export function copyTextToClipboard(text) {
+    const dummy = document.createElement('input');
+    document.body.appendChild(dummy);
+    dummy.value = text;
+    dummy.select();
+    document.execCommand('copy');
+    document.body.removeChild(dummy);
+}

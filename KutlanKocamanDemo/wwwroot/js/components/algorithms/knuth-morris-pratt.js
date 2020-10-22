@@ -3,7 +3,8 @@ import { Row, Col, Input, FormGroup, Label, Button } from "reactstrap";
 import { DocumentTitle } from '../document-title';
 import { AnimationControl } from '../animation-control';
 import { LinkedList } from "../../shared/linked-list";
-import { createDeepCopy } from "../../shared/functions";
+import { createDeepCopy, setQueryStringParameter, getQueryStringParameter } from "../../shared/functions";
+import { ShareButton } from "../share-button";
 
 import '../../../css/knuth-morris-pratt.css';
 
@@ -13,10 +14,17 @@ export class KnuthMorrisPratt extends React.Component {
 
         this.animationList = new LinkedList();
 
+        this.maxNeedleLength = 18;
+        this.maxHaystackLength = 200;
+
+        let needle = (getQueryStringParameter('n') ?? 'coconut').substring(0, this.maxNeedleLength - 1);
+        let haystack = (getQueryStringParameter('h') ?? 'I like cocoa and coconut flavours').substring(0, this.maxHaystackLength - 1);
+        let caseSensitive = (parseInt(getQueryStringParameter('c')) ?? 0) === 1;
+        
         this.state = {
-            needle: 'coconut',
-            haystack: 'I like cocoa and coconut flavours',
-            caseSensitive: false,
+            needle: needle,
+            haystack: haystack,
+            caseSensitive: caseSensitive,
             kmpTable: null,
             foundIndexes: [],
             needleRangeToHighlight: {start: 0, end: 0, type: 'NONE'},
@@ -300,8 +308,11 @@ export class KnuthMorrisPratt extends React.Component {
     }
 
     onNeedleChange = (event) => {
+        const newNeedle = event.target.value.substring(0, this.maxNeedleLength - 1);
+        setQueryStringParameter('n', newNeedle);
+
         this.setState({
-            needle: event.target.value,
+            needle: newNeedle,
             foundIndexes: [],
             haystackRangesToHighlight: [],
             isAnimationInSync: false
@@ -309,6 +320,8 @@ export class KnuthMorrisPratt extends React.Component {
     }
 
     onCaseSensitiveChange = () => {
+        setQueryStringParameter('c', !this.state.caseSensitive === true ? 1 : 0);
+
         this.setState({
             caseSensitive: !this.state.caseSensitive,
             foundIndexes: [],
@@ -318,8 +331,11 @@ export class KnuthMorrisPratt extends React.Component {
     }
 
     onHaystackChange = (event) => {
+        const newHaystack = event.target.value.substring(0, this.maxHaystackLength - 1);
+        setQueryStringParameter('h', newHaystack);
+
         this.setState({
-            haystack: event.target.value,
+            haystack: newHaystack,
             foundIndexes: [],
             haystackRangesToHighlight: [],
             isAnimationInSync: false
@@ -565,15 +581,23 @@ export class KnuthMorrisPratt extends React.Component {
                         <li className='instructions-list-item'>Enter a string to search within.</li>
                         <li className='instructions-list-item'>Click "Start New Animation".</li>
                     </ol>
-                    <div>
-                        <Label for='needle' className='kmp-header-label'>The string to search for:</Label>
-                        <Input
-                            id='needle'
-                            value={this.state.needle}
-                            disabled={this.state.animationCurrent !== null}
-                            onChange={() => this.onNeedleChange(event)}
-                        />
-                    </div>
+                    <Row>
+                        <Col>
+                            <ShareButton />
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col>
+                            <Label for='needle' className='kmp-header-label'>The string to search for:</Label>
+                            <Input
+                                id='needle'
+                                maxLength={this.maxNeedleLength}
+                                value={this.state.needle}
+                                disabled={this.state.animationCurrent !== null}
+                                onChange={() => this.onNeedleChange(event)}
+                                />
+                        </Col>
+                    </Row>
                     <FormGroup check>
                         <Label>
                             <Input
@@ -591,6 +615,7 @@ export class KnuthMorrisPratt extends React.Component {
                             id='haystack'
                             type='textarea'
                             rows='3'
+                            maxLength={this.maxHaystackLength}
                             value={this.state.haystack}
                             disabled={this.state.animationCurrent !== null}
                             onChange={() => this.onHaystackChange(event)}

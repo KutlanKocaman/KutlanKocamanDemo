@@ -19,6 +19,9 @@
     "build": "webpack"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.32",
+    "@fortawesome/free-solid-svg-icons": "^5.15.1",
+    "@fortawesome/react-fontawesome": "^0.1.11",
     "react-router-dom": "^5.2.0",
     "react-router-ga": "^1.2.3",
     "reactstrap": "^8.5.1"
