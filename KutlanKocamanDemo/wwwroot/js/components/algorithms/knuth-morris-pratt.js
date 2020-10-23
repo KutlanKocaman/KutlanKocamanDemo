@@ -130,6 +130,9 @@ export class KnuthMorrisPratt extends React.Component {
         let needle = createDeepCopy(this.state.needle);
         let haystack = createDeepCopy(this.state.haystack);
 
+        //Replace new lines in the haystack with spaces.
+        haystack = haystack.replace(/[\r\n]+/g, " ");
+
         if (!this.state.caseSensitive) {
             needle = needle.toUpperCase();
             haystack = haystack.toUpperCase();
