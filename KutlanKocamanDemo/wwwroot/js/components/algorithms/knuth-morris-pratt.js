@@ -4,6 +4,7 @@ import { DocumentTitle } from '../document-title';
 import { AnimationControl } from '../animation-control';
 import { LinkedList } from "../../shared/linked-list";
 import { createDeepCopy, setQueryStringParameter, getQueryStringParameter } from "../../shared/functions";
+import { ModalInformational } from "../modal-info";
 import { ShareButton } from "../share-button";
 
 import '../../../css/knuth-morris-pratt.css';
@@ -585,7 +586,46 @@ export class KnuthMorrisPratt extends React.Component {
                         <li className='instructions-list-item'>Click "Start New Animation".</li>
                     </ol>
                     <Row>
-                        <Col>
+                        <Col className='kmp-button-col'>
+                            <ModalInformational
+                                buttonText="More Information"
+                                modalTitle="More Information"
+                                modalContents={
+                                    <div>
+                                        <p>
+                                            The Knuth-Morris-Pratt is a notable algorithm because it can locate a string (sometimes called the "needle") within
+                                            another string (sometimes called the "haystack") in O(needle length + haystack length) time, in the worst case.
+                                            The algorithm never has to return to an earlier position in the haystack - it only moves forward in the haystack, or
+                                            potentially re-examines the same character in the haystack, comparing it to a character further back in the needle.
+                                            It manages to avoid re-examining letters to the left in the haystack by doing some pre-analysis on the needle: looking
+                                            for substrings which match the leftmost characters of the needle.
+                                        </p>
+                                        <p>
+                                            The bottom row of the pre-processing table shows the result of this pre-analysis. The numbers refer to the index that
+                                            should be checked for a match next, if the current needle character does not match the current haystack character. For
+                                            example, if your needle is coconut, and you have already matched "coco" in the haystack, but the next letter in the haystack
+                                            is not "n", you do not need to start from the first letter of the needle again. You have matched coco, and found a mimatch,
+                                            so you know that the previous two characters in both the needle and the haystack are "co", so you can try matching the 3rd
+                                            letter in the needle next, instead of the first.
+                                        </p>
+                                        <p>
+                                            The same pre-processing can help avoid unnecessarily revisiting previous letters in the haystack in the standard
+                                            "difficult case" for a naive string search algorithm: when you have a needle like "aaaaaa" and a haystack like "aaaaaba...".
+                                            Having matched the first 5 characters in the needle and haystack and then found a mismatch, we know that there is no
+                                            reason to go back and start matching again from the second character in the haystack, because we have analysed the needle
+                                            and know that there is no substring to the left of the current position within the needle which has a chance of matching.
+                                            Therefore, the next chance of a match is to move to the next character in the haystack and to start again from the beginning
+                                            of the needle.
+                                        </p>
+                                        <p>
+                                            The last column in the pre-processing table will not contain any character - its function is to hold the index to match
+                                            next, once the entire needle has been matched in the haystack. For example, for the needle "aaaaaa", the last index
+                                            will be 5, because if we have matched 6 "a"s in a row, we know the previous 5 letters are "a", therefore we only need to match
+                                            one more "a"!
+                                        </p>
+                                    </div>
+                                }
+                            />
                             <ShareButton />
                         </Col>
                     </Row>

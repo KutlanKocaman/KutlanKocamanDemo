@@ -2,6 +2,10 @@
     font-weight: bold;
 }
 
+.kmp-button-col {
+    display: flex;
+}
+
 .kmp-found-indexes-container {
     min-height: 2.6em;
 }
