@@ -7,7 +7,7 @@ import { GraphEdge } from '../graph-edge';
 import { createDeepCopy } from "../../shared/functions";
 import { AnimationControl } from '../animation-control';
 import { GraphEditer } from '../graph-editer';
-import { ModalInformational } from "../modal-info";
+import { ModalInformational } from "../modal-informational";
 import { LinkedList } from "../../shared/linked-list";
 
 export class TopologicalSort extends React.Component {

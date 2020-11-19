@@ -3,7 +3,17 @@
 }
 
 .kmp-button-col {
-    display: flex;
+    display: block;
+}
+
+.kmp-input-set-dropdown {
+    margin-right: 0.5em;
+    margin-bottom: 0.5em;
+    display: inline-block;
+}
+
+.kmp-delete-button {
+    margin-right: 0.5em;
 }
 
 .kmp-found-indexes-container {
@@ -37,4 +47,8 @@
 .kmp-text-show {
     background-color: yellow;
     color: black;
+}
+
+.kmp-haystack {
+    word-break: break-word;
 }

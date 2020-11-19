@@ -3,7 +3,7 @@ import { Row, Col } from "reactstrap";
 import { DocumentTitle } from '../document-title';
 import TrieNode from "../../shared/trie-node";
 import { createMultiDimensionalArray, createDeepCopy, randomBetweenInclusive } from "../../shared/functions";
-import { ModalInformational } from "../modal-info";
+import { ModalInformational } from "../modal-informational";
 import { AnimationControl } from '../animation-control';
 import { LinkedList } from '../../shared/linked-list';
 

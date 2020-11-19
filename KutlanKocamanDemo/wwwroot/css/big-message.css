@@ -1,0 +1,9 @@
+﻿.big-message {
+    position: fixed;
+    transform: translate(-50%, 0);
+    z-index: 100;
+    top: 10%;
+    left: 50%;
+    font-size: 50px;
+    font-weight: bold;
+}

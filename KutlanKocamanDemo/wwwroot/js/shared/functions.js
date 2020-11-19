@@ -76,6 +76,23 @@ export function getQueryStringParameter(name) {
 }
 
 /**
+ * Removes the query string and anything after it from a URI.
+ * @param {any} uri The URI to remove the query string from. Uses the current URI as default.
+ */
+export function getUriWithoutQueryString(uri = null) {
+    if (uri === null) {
+        uri = window.location.href;
+    }
+
+    const qMarkIndex = uri.indexOf('?');
+    if (qMarkIndex > 0) {
+        uri = uri.substring(0, qMarkIndex);
+    }
+
+    return uri;
+}
+
+/**
  * Copied the given text to the clipboard.
  * @param {any} text The text to be copied to the clipboard.
  */

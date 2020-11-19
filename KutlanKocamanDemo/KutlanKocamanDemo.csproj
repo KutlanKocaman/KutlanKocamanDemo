@@ -16,6 +16,8 @@
 
   <ItemGroup>
     <FrameworkRerence Include="Microsoft.AspNetCore.App" Version="2.2.8" />
+    <PackageReference Include="AutoMapper" Version="10.1.1" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.0" />
     <PackageReference Include="JavaScriptEngineSwitcher.Extensions.MsDependencyInjection" Version="3.3.0" />
     <PackageReference Include="JavaScriptEngineSwitcher.V8" Version="3.5.5" />
     <PackageReference Include="JavaScriptEngineSwitcher.V8.Native.win-x64" Version="3.5.5" />

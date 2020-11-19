@@ -23,7 +23,7 @@ export class ShareButton extends React.Component {
     }
 
     onClickHandler = () => {
-        copyTextToClipboard(window.location.href);
+        this.props.shareFunction();
 
         this.popoverOpenCancellationToken = setTimeout(() => {
             this.setState({ open: false });
@@ -36,7 +36,7 @@ export class ShareButton extends React.Component {
 
     render() {
         return (
-            <div>
+            <div className='share-button-container'>
                 <UncontrolledTooltip
                     placement='top'
                     target='shareButton'

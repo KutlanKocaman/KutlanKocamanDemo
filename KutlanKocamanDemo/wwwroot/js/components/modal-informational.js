@@ -3,6 +3,7 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 export const ModalInformational = (props) => {
     const {
+        className,
         buttonText,
         modalTitle,
         modalContents
@@ -13,7 +14,7 @@ export const ModalInformational = (props) => {
     const toggle = () => setModal(!modal);
 
     return (
-        <div>
+        <div className={className}>
             <Button color="primary" onClick={toggle}>{buttonText}</Button>
             <Modal isOpen={modal} toggle={toggle}>
                 <ModalHeader toggle={toggle}>{modalTitle}</ModalHeader>

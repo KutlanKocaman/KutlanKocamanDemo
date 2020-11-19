@@ -21,6 +21,8 @@ using JavaScriptEngineSwitcher.V8;
 using JavaScriptEngineSwitcher.Extensions.MsDependencyInjection;
 using React.AspNet;
 using KutlanKocamanDemo.Middleware;
+using AutoMapper;
+using KutlanKocamanDemo.Filters;
 
 namespace KutlanKocamanDemo
 {
@@ -51,6 +53,8 @@ namespace KutlanKocamanDemo
             services.AddTransient<EmailSender>();
             services.Configure<AuthMessageSenderOptions>(Configuration);
 
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
             //For React.
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddReact();
@@ -64,7 +68,7 @@ namespace KutlanKocamanDemo
                 var policy = new AuthorizationPolicyBuilder()
                     .RequireAuthenticatedUser() //Global authorization filter.
                     .Build();
-                o.Filters.Add(new AuthorizeFilter(policy));
+                o.Filters.Add(new CustomAuthorizeFilter(policy));
             });
 
             //Allow Microsoft OAuth login.
