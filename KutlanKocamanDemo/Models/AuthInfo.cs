@@ -8,5 +8,6 @@ namespace KutlanKocamanDemo.Models
     public class AuthInfo
     {
         public bool Authenticated { get; set; }
+        public string UserName { get; set; }
     }
 }

@@ -22,54 +22,56 @@
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-nav" asp-area="" asp-controller="Home" asp-action="Index">
-                    <img class="navbar-logo" src="~/Images/KutlanCoder.svg" />
-                </a>
-                <div class="navbar-right-pad"></div>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row">
-                    <div class="btn-group navbar-nav">
-                        <a href="#" type="button" class="nav-link text-dark" id="contentForAllUsersButton" data-toggle="dropdown">
-                            Content for all users
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="contentForAllUsersButton">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="SPA" asp-action="Index">Algorithms</a>
+    @if (!Context.Request.Path.StartsWithSegments("/spa"))
+    {
+        <header>
+            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+                <div class="container">
+                    <a class="navbar-nav" asp-area="" asp-controller="Home" asp-action="Index">
+                        <img class="navbar-logo" src="~/Images/KutlanCoder.svg" />
+                    </a>
+                    <div class="navbar-right-pad"></div>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                            aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row">
+                        <div class="btn-group navbar-nav">
+                            <a href="#" type="button" class="nav-link text-dark" id="algorithmsButton" data-toggle="dropdown">
+                                Algorithms
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="algorithmsButton">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="SPA" asp-action="KnuthMorrisPratt">KMP String Search</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="SPA" asp-action="TopologicalSort">Topological Sort</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="SPA" asp-action="WordSearch">Word Search</a>
+                            </div>
                         </div>
-                    </div>
-                    @if (User.Identity.IsAuthenticated)
-                    {
-                    <div class="btn-group navbar-nav">
-                        <a href="#" type="button" class="nav-link text-dark" id="contentForAuthUsersButton" data-toggle="dropdown">
-                            Content for authenticated users
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="contentForAuthUsersButton">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Customers" asp-action="Index">Customers (SQL DB CRUD)</a>
+                        <div class="btn-group navbar-nav ml-auto">
+                            <a class="nav-link text-dark navbar-nav" asp-area="" asp-controller="Home" asp-action="About">About</a>
                         </div>
+                        <partial name="_LoginPartial" />
                     </div>
-                    }
-                    <div class="btn-group navbar-nav ml-auto">
-                        <a class="nav-link text-dark navbar-nav" asp-area="" asp-controller="Home" asp-action="About">About</a>
-                    </div>
-                    <partial name="_LoginPartial" />
                 </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+            </nav>
+        </header>
+    }
 
-        <script src="~/lib/jquery/dist/jquery.min.js"></script>
-        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="~/js/site.js" asp-append-version="true"></script>
-        @RenderSection("Scripts", required: false)
-    </body>
+    @if (!Context.Request.Path.StartsWithSegments("/spa"))
+    {
+        <div class="container">
+            <main role="main" class="pb-3">
+                @RenderBody()
+            </main>
+        </div>
+    }
+    else
+    {
+        @RenderBody()
+    }
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @RenderSection("Scripts", required: false)
+</body>
 </html>

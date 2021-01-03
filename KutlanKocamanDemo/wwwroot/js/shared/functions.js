@@ -104,3 +104,19 @@ export function copyTextToClipboard(text) {
     document.execCommand('copy');
     document.body.removeChild(dummy);
 }
+
+/**
+ * Attach a given request verification token value to a given form, then submit the form.
+ * @param {any} formName The name of the form to submit.
+ * @param {any} requestVerificationTokenValue The value to be set for the request verification token form input.
+ */
+export function submitFormWithRequestVerificationToken(formName, requestVerificationTokenValue) {
+    //Create a request verification token input element, assign the given value, and append it to the form.
+    let requestVerificationTokenInput = document.createElement("input");
+    requestVerificationTokenInput.setAttribute("name", "__RequestVerificationToken");
+    requestVerificationTokenInput.value = requestVerificationTokenValue;
+    document.forms[formName].appendChild(requestVerificationTokenInput);
+
+    //Submit the form.
+    document.forms[formName].submit();
+}

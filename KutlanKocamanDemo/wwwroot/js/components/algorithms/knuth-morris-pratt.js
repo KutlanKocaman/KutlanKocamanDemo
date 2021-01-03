@@ -8,6 +8,7 @@ import { ModalInformational } from "../modal-informational";
 import { ModalSave } from '../modal-save'
 import { ShareButton } from "../share-button";
 import { BigMessage } from "../big-message";
+import { UserContext } from '../../components/user-context';
 
 import '../../../css/knuth-morris-pratt.css';
 
@@ -48,17 +49,7 @@ export class KnuthMorrisPratt extends React.Component {
     }
 
     componentDidMount() {
-        //Check if the user is logged in.
-        fetch(new Request('/api/Auth'))
-            .then((response) => {
-                const responseJSON = response.json();
-                responseJSON.then(data => {
-                    this.setState({
-                        isUserLoggedIn: data.authenticated
-                    });
-                });
-            });
-
+        //If there is a needle and haystack in the query string, populate the animation with these values.
         if (getQueryStringParameter('n') !== null && getQueryStringParameter('h') !== null) {
             this.getKmpInputSets();
         }
@@ -990,163 +981,167 @@ React render.
 
     render() {
         return (
-            <Row>
-                <DocumentTitle documentTitle='Knuth-Morris-Pratt' />
-                <BigMessage
-                    messageText={this.state.tempBigMessage}
-                    color='success'
-                    show={this.state.tempBigMessageShow}
-                />
-                <Col lg='6'>
-                    <h3>Knuth-Morris-Pratt</h3>
-                    <h5>Instructions:</h5>
-                    <ol>
-                        <li className='instructions-list-item'>Enter a string to search for.</li>
-                        <li className='instructions-list-item'>Enter a string to search within.</li>
-                        <li className='instructions-list-item'>Click "Start New Animation".</li>
-                    </ol>
+            <UserContext.Consumer>
+                {({ authenticated, updateAuthenticated }) => (
                     <Row>
-                        <Col className='kmp-button-col'>
-                            <ModalInformational
-                                className='modal-save'
-                                buttonText="More Information"
-                                modalTitle="More Information"
-                                modalContents={
-                                    <div>
-                                        <p>
-                                            The Knuth-Morris-Pratt string search algorithm is a notable algorithm because it is able to locate a string
-                                            (sometimes called a needle) within another string (sometimes called a haystack) without ever returning to an
-                                            earlier position in the haystack. This allows it to have a time complexity, in the worst case of
-                                            O(needle length + haystack length) – at least as good or better than any other string search algorithm.
-                                        </p>
-                                        <p>
-                                            To make this a bit more concrete, let’s take the example of a needle of "aaaaaab" and a haystack of "aaaaaaaaaaaa…".
-                                            A naive string search algorithm might compare the first letter of the needle with the haystack, find a match, then
-                                            compare the second letter of both, find a match, and so on, until the final letter of the needle, "b", is reached,
-                                            where a mismatch would be found. At this point we know that there is no match at the first character of the haystack,
-                                            so we move the needle forward by one character and attempt to match the second character of the haystack with the
-                                            first letter of the needle. This will have a time complexity of O(needle length * haystack length).
-                                        </p>
-                                        <p>
-                                            How does Knuth-Morris-Pratt improve upon this, to achieve a time complexity of O(needle length + haystack length)?
-                                            It does some pre-processing on the needle. The aim of the pre-processing is to discover any substring within the
-                                            needle which matches the leftmost characters in the needle. In this case, take the middle characters of the needle
-                                            as an example: "aaaaa". These middle 5 characters match the first 5 characters of the needle, so if we find 6 "a"s
-                                            in a row in the haystack, then a character which is not a "b", we don’t need to re-compare the most recent "a"s
-                                            again, we can simply shift the needle forward by 1, with the knowledge that we will still have 5 matching "a"s in
-                                            the needle and the haystack. This looks like the below:
-                                        </p>
-                                        <p>
-                                            <b>6 "a"s are matched but the "b" is not...</b>
-                                            <img className='img-fluid' src='/images/Knuth-Morris-Pratt_pre-processing_index_1.PNG' />
-                                        </p>
-                                        <p>
-                                            <b>... but we still have 5 remaining "a"s which we know will match, so we don't need to recompare.</b>
-                                            <img className='img-fluid' src='/images/Knuth-Morris-Pratt_pre-processing_index_2.PNG' />
-                                        </p>
-                                        <p>
-                                            This is what the last row in the pre-processing table tells us: which index in the needle to compare next if we find
-                                            a mismatch. A "-1" tells us to move our position in the haystack forward by 1, and start from 0 in the needle. The final
-                                            character in the pre-processing table is not a space character, but a null, or no character. This is there to tell us
-                                            where to return to in the needle if we have successfully matched the entire needle in the string, if we are looking to
-                                            find not just the first needle in the haystack, but every occurrence of the needle in the haystack.
-                                        </p>
-                                        <p>
-                                            This pre-processing work saves us from having to ever return to an earlier position in the haystack, and hence
-                                            allows us to have a time complexity of O(needle length + haystack length) rather than O(needle length * haystack length).
-                                        </p>
-                                    </div>
-                                }
-                            />
-                            <ShareButton shareFunction={this.getShareLink} />
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col className='kmp-button-col'>
-                            <UncontrolledDropdown className='kmp-input-set-dropdown'>
-                                <DropdownToggle
-                                    caret
-                                    color='primary'
-                                >{this.getSelectedInputSetName() ?? 'Select an input set'}</DropdownToggle>
-                                <DropdownMenu>
-                                    {this.renderKMPDropDown()}
-                                </DropdownMenu>
-                            </UncontrolledDropdown>
-                            <ModalSave
-                                disabled={!this.state.isUserLoggedIn}
-                                disabledTitle='You must be logged in to save your own input sets'
-                                defaultSaveName={this.getSelectedInputSetName()}
-                                saveName={this.state.saveName}
-                                saveFunction={this.saveInputSet}
-                                updateSaveName={this.updateSaveName}
-                            />
-                            <Button
-                                color='danger'
-                                className={this.getDeleteButtonClassName()}
-                                disabled={!this.state.isUserLoggedIn}
-                                onClick={this.deleteInputSet}
-                            >Delete</Button>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col>
-                            <br />
-                            <Label for='needle' className='kmp-header-label'>The string to search for:</Label>
-                            <Input
-                                id='needle'
-                                maxLength={this.maxNeedleLength}
-                                value={this.state.needle}
-                                disabled={this.state.animationCurrent !== null}
-                                onChange={() => this.onNeedleChange(event)}
-                                />
-                        </Col>
-                    </Row>
-                    <FormGroup check>
-                        <Label>
-                            <Input
-                                type='checkbox'
-                                checked={this.state.caseSensitive}
-                                disabled={this.state.animationCurrent !== null}
-                                onChange={() => this.onCaseSensitiveChange()}
-                            />
-                            Case sensitive
-                        </Label>
-                    </FormGroup>
-                    <FormGroup>
-                        <Label for='haystack' className='kmp-header-label'>The string to search within:</Label>
-                        <Input
-                            id='haystack'
-                            type='textarea'
-                            rows='3'
-                            maxLength={this.maxHaystackLength}
-                            value={this.state.haystack}
-                            disabled={this.state.animationCurrent !== null}
-                            onChange={() => this.onHaystackChange(event)}
+                        <DocumentTitle documentTitle='Knuth-Morris-Pratt' />
+                        <BigMessage
+                            messageText={this.state.tempBigMessage}
+                            color='success'
+                            show={this.state.tempBigMessageShow}
                         />
-                    </FormGroup>
-                </Col>
-                <Col>
-                    <AnimationControl
-                        animationList={this.state.animationList}
-                        animationCurrent={this.state.animationCurrent}
-                        startNewAnimation={this.startNewAnimation}
-                        doOneAnimation={this.doOneAnimation}
-                        doRemainingAnimations={this.doRemainingAnimations}
-                        replayAnimation={this.replayAnimation}
-                        buttonsDisabled={!this.state.isAnimationInSync}
-                        maxTimeBetweenAnimationsMs={1000}
-                    />
-                    <br />
-                    <Label className='kmp-header-label'>Pre-processing table:</Label>
-                    {this.renderKMPTable()}
-                    <br />
-                    <Label className='kmp-header-label'>Search string found at positions:</Label>
-                    {this.renderFoundIndexes()}
-                    <br />
-                    <Label className='kmp-header-label'>The string to search within:</Label>
-                    {this.renderHaystack()}
-                </Col>
-            </Row>
+                        <Col lg='6'>
+                            <h3>Knuth-Morris-Pratt</h3>
+                            <h5>Instructions:</h5>
+                            <ol>
+                                <li className='instructions-list-item'>Enter a string to search for.</li>
+                                <li className='instructions-list-item'>Enter a string to search within.</li>
+                                <li className='instructions-list-item'>Click "Start New Animation".</li>
+                            </ol>
+                            <Row>
+                                <Col className='kmp-button-col'>
+                                    <ModalInformational
+                                        className='modal-save'
+                                        buttonText="More Information"
+                                        modalTitle="More Information"
+                                        modalContents={
+                                            <div>
+                                                <p>
+                                                    The Knuth-Morris-Pratt string search algorithm is a notable algorithm because it is able to locate a string
+                                                    (sometimes called a needle) within another string (sometimes called a haystack) without ever returning to an
+                                                    earlier position in the haystack. This allows it to have a time complexity, in the worst case of
+                                                    O(needle length + haystack length) – at least as good or better than any other string search algorithm.
+                                            </p>
+                                                <p>
+                                                    To make this a bit more concrete, let’s take the example of a needle of "aaaaaab" and a haystack of "aaaaaaaaaaaa…".
+                                                    A naive string search algorithm might compare the first letter of the needle with the haystack, find a match, then
+                                                    compare the second letter of both, find a match, and so on, until the final letter of the needle, "b", is reached,
+                                                    where a mismatch would be found. At this point we know that there is no match at the first character of the haystack,
+                                                    so we move the needle forward by one character and attempt to match the second character of the haystack with the
+                                                    first letter of the needle. This will have a time complexity of O(needle length * haystack length).
+                                            </p>
+                                                <p>
+                                                    How does Knuth-Morris-Pratt improve upon this, to achieve a time complexity of O(needle length + haystack length)?
+                                                    It does some pre-processing on the needle. The aim of the pre-processing is to discover any substring within the
+                                                    needle which matches the leftmost characters in the needle. In this case, take the middle characters of the needle
+                                                    as an example: "aaaaa". These middle 5 characters match the first 5 characters of the needle, so if we find 6 "a"s
+                                                    in a row in the haystack, then a character which is not a "b", we don’t need to re-compare the most recent "a"s
+                                                    again, we can simply shift the needle forward by 1, with the knowledge that we will still have 5 matching "a"s in
+                                                    the needle and the haystack. This looks like the below:
+                                            </p>
+                                                <p>
+                                                    <b>6 "a"s are matched but the "b" is not...</b>
+                                                    <img className='img-fluid' src='/images/Knuth-Morris-Pratt_pre-processing_index_1.PNG' />
+                                                </p>
+                                                <p>
+                                                    <b>... but we still have 5 remaining "a"s which we know will match, so we don't need to recompare.</b>
+                                                    <img className='img-fluid' src='/images/Knuth-Morris-Pratt_pre-processing_index_2.PNG' />
+                                                </p>
+                                                <p>
+                                                    This is what the last row in the pre-processing table tells us: which index in the needle to compare next if we find
+                                                    a mismatch. A "-1" tells us to move our position in the haystack forward by 1, and start from 0 in the needle. The final
+                                                    character in the pre-processing table is not a space character, but a null, or no character. This is there to tell us
+                                                    where to return to in the needle if we have successfully matched the entire needle in the string, if we are looking to
+                                                    find not just the first needle in the haystack, but every occurrence of the needle in the haystack.
+                                            </p>
+                                                <p>
+                                                    This pre-processing work saves us from having to ever return to an earlier position in the haystack, and hence
+                                                    allows us to have a time complexity of O(needle length + haystack length) rather than O(needle length * haystack length).
+                                            </p>
+                                            </div>
+                                        }
+                                    />
+                                    <ShareButton shareFunction={this.getShareLink} />
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col className='kmp-button-col'>
+                                    <UncontrolledDropdown className='kmp-input-set-dropdown'>
+                                        <DropdownToggle
+                                            caret
+                                            color='primary'
+                                        >{this.getSelectedInputSetName() ?? 'Select an input set'}</DropdownToggle>
+                                        <DropdownMenu>
+                                            {this.renderKMPDropDown()}
+                                        </DropdownMenu>
+                                    </UncontrolledDropdown>
+                                    <ModalSave
+                                        disabled={!authenticated}
+                                        disabledTitle='You must be logged in to save your own input sets'
+                                        defaultSaveName={this.getSelectedInputSetName()}
+                                        saveName={this.state.saveName}
+                                        saveFunction={this.saveInputSet}
+                                        updateSaveName={this.updateSaveName}
+                                    />
+                                    <Button
+                                        color='danger'
+                                        className={this.getDeleteButtonClassName()}
+                                        disabled={!authenticated}
+                                        onClick={this.deleteInputSet}
+                                    >Delete</Button>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col>
+                                    <br />
+                                    <Label for='needle' className='kmp-header-label'>The string to search for:</Label>
+                                    <Input
+                                        id='needle'
+                                        maxLength={this.maxNeedleLength}
+                                        value={this.state.needle}
+                                        disabled={this.state.animationCurrent !== null}
+                                        onChange={() => this.onNeedleChange(event)}
+                                    />
+                                </Col>
+                            </Row>
+                            <FormGroup check>
+                                <Label>
+                                    <Input
+                                        type='checkbox'
+                                        checked={this.state.caseSensitive}
+                                        disabled={this.state.animationCurrent !== null}
+                                        onChange={() => this.onCaseSensitiveChange()}
+                                    />
+                                Case sensitive
+                            </Label>
+                            </FormGroup>
+                            <FormGroup>
+                                <Label for='haystack' className='kmp-header-label'>The string to search within:</Label>
+                                <Input
+                                    id='haystack'
+                                    type='textarea'
+                                    rows='3'
+                                    maxLength={this.maxHaystackLength}
+                                    value={this.state.haystack}
+                                    disabled={this.state.animationCurrent !== null}
+                                    onChange={() => this.onHaystackChange(event)}
+                                />
+                            </FormGroup>
+                        </Col>
+                        <Col>
+                            <AnimationControl
+                                animationList={this.state.animationList}
+                                animationCurrent={this.state.animationCurrent}
+                                startNewAnimation={this.startNewAnimation}
+                                doOneAnimation={this.doOneAnimation}
+                                doRemainingAnimations={this.doRemainingAnimations}
+                                replayAnimation={this.replayAnimation}
+                                buttonsDisabled={!this.state.isAnimationInSync}
+                                maxTimeBetweenAnimationsMs={1000}
+                            />
+                            <br />
+                            <Label className='kmp-header-label'>Pre-processing table:</Label>
+                            {this.renderKMPTable()}
+                            <br />
+                            <Label className='kmp-header-label'>Search string found at positions:</Label>
+                            {this.renderFoundIndexes()}
+                            <br />
+                            <Label className='kmp-header-label'>The string to search within:</Label>
+                            {this.renderHaystack()}
+                        </Col>
+                    </Row>
+                )}
+            </UserContext.Consumer>
         )
     }
 }

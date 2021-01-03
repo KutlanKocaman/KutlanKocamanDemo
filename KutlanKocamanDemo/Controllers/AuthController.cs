@@ -23,11 +23,12 @@ namespace KutlanKocamanDemo.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public ActionResult<AuthInfo> AmILoggedIn()
+        public ActionResult<AuthInfo> GetAuthInfo()
         {
             return Ok(new AuthInfo
             {
-                Authenticated = _userManager.GetUserId(User) != null
+                Authenticated = User.Identity.IsAuthenticated,
+                UserName = User.Identity.Name
             });
         }
 
