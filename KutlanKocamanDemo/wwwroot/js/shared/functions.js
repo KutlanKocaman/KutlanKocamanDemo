@@ -120,3 +120,10 @@ export function submitFormWithRequestVerificationToken(formName, requestVerifica
     //Submit the form.
     document.forms[formName].submit();
 }
+
+/**
+ * Get the request verification token value.
+ * */
+export function getRequestVerificationTokenValue() {
+    return document.querySelector("input[name=\"__RequestVerificationToken\"]").value;
+}

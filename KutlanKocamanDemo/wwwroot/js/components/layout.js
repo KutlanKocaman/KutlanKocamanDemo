@@ -1,7 +1,7 @@
 ﻿import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { UserContext } from '../components/user-context';
-import { submitFormWithRequestVerificationToken } from '../shared/functions';
+import { submitFormWithRequestVerificationToken, getRequestVerificationTokenValue } from '../shared/functions';
 
 export class Layout extends Component {
     constructor(props) {
@@ -48,7 +48,7 @@ export class Layout extends Component {
                         <form id="logoutForm" className="form-inline" action={this.getLogoutActionUrl()} method="post" />
                         <a
                             className="nav-link text-dark"
-                            onClick={() => { submitFormWithRequestVerificationToken("logoutForm", document.querySelector("input[name=\"__RequestVerificationToken\"]").value); }}
+                            onClick={() => { submitFormWithRequestVerificationToken("logoutForm", getRequestVerificationTokenValue()); }}
                             href="#"
                         >Logout</a>
                     </div>

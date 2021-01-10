@@ -15,6 +15,7 @@ namespace KutlanKocamanDemo.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [ValidateAntiForgeryToken]
     public class KnuthMorrisPrattController : ControllerBase
     {
         private ApplicationDbContext _dbContext;

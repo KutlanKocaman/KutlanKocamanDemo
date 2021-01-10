@@ -3,7 +3,7 @@ import { Row, Col, Input, FormGroup, Label, Button, UncontrolledDropdown, Dropdo
 import { DocumentTitle } from '../document-title';
 import { AnimationControl } from '../animation-control';
 import { LinkedList } from "../../shared/linked-list";
-import { createDeepCopy, getUriWithoutQueryString, getQueryStringParameter, copyTextToClipboard } from "../../shared/functions";
+import { createDeepCopy, getUriWithoutQueryString, getQueryStringParameter, copyTextToClipboard, getRequestVerificationTokenValue } from "../../shared/functions";
 import { ModalInformational } from "../modal-informational";
 import { ModalSave } from '../modal-save'
 import { ShareButton } from "../share-button";
@@ -812,7 +812,9 @@ Get a list of KMP input sets from the server.
 ************************************************************/
 
     getKmpInputSets = (callback = null) => {
-        fetch(new Request('/api/KnuthMorrisPratt'))
+        let request = new Request('/api/KnuthMorrisPratt');
+        request.headers.append("RequestVerificationToken", getRequestVerificationTokenValue());
+        fetch(request)
             .then((response) => {
                 const responseJSON = response.json();
                 responseJSON.then(data => {
@@ -870,6 +872,7 @@ Save the input set using the given name.
         };
         const requestBody = new Blob([JSON.stringify(requestJson, null, 2)], { type: 'application/json' });
         const request = new Request(requestUri, { method: requestMethod, body: requestBody });
+        request.headers.append("RequestVerificationToken", getRequestVerificationTokenValue());
         fetch(request)
             .then((response) => {
                 if ([200, 201].includes(response.status)) {
@@ -902,6 +905,7 @@ Delete the current input set.
 
         const requestUri = `/api/KnuthMorrisPratt/${this.state.kmpInputSets[this.state.kmpInputSetSelected].id}`;
         const request = new Request(requestUri, { method: 'DELETE' });
+        request.headers.append("RequestVerificationToken", getRequestVerificationTokenValue());
         fetch(request)
             .then((response) => {
                 if (response.status === 200) {
