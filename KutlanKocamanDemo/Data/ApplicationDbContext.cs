@@ -10,7 +10,6 @@ namespace KutlanKocamanDemo.Data
 {
     public class ApplicationDbContext : IdentityDbContext
     {
-        public DbSet<Customer> Customers { get; set; }
         public DbSet<KnuthMorrisPrattInput> KnuthMorrisPrattInputs { get; set; }
         public DbSet<KnuthMorrisPrattInputOwner> KnuthMorrisPrattInputOwners { get; set; }
 

@@ -78,11 +78,6 @@ namespace KutlanKocamanDemo.Areas.Identity.Pages.Account.Manage
             {
                 try
                 {
-                    //Delete customers owned by the user.
-                    var customersForUser = _dbContext.Customers.Where(c => c.Owner.Id == userId);
-                    _dbContext.Customers.RemoveRange(customersForUser);
-                    _dbContext.SaveChanges();
-
                     //Delete KnuthMorrisPratt input sets owned by the user.
                     var knuthMorrisPrattInputs =
                         from input in _dbContext.KnuthMorrisPrattInputs
