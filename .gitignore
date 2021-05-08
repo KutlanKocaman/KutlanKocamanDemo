@@ -360,3 +360,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+/KutlanKocamanDemo/.config/dotnet-tools.json
+/KutlanKocamanDemo/appsettings.Production.json

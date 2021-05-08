@@ -20,7 +20,6 @@ using Microsoft.AspNetCore.Http;
 using JavaScriptEngineSwitcher.V8;
 using JavaScriptEngineSwitcher.Extensions.MsDependencyInjection;
 using React.AspNet;
-using KutlanKocamanDemo.Middleware;
 using AutoMapper;
 using KutlanKocamanDemo.Filters;
 
@@ -81,7 +80,7 @@ namespace KutlanKocamanDemo
             //Configuration the application cookie.
             services.ConfigureApplicationCookie(options =>
             {
-                options.Cookie.Name = "KutlanKocamanDemo";
+                options.Cookie.Name = "KutlanCoder";
                 options.Cookie.HttpOnly = true;
                 options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
                 options.SlidingExpiration = true;
@@ -104,8 +103,6 @@ namespace KutlanKocamanDemo
             app.UseReact(config => {});
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
-            app.UseMiddleware<RedirectMiddleware>();
 
             app.UseRouting();
 
